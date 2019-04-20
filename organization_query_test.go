@@ -7,7 +7,7 @@ import (
 )
 
 func TestBuildVariables(t *testing.T) {
-	vars := buildVariables()
+	vars := buildOrgVariables()
 	assert.NotNil(t, vars, "Variables not created")
 	assert.Contains(t, vars, "login")
 	assert.Contains(t, vars, "repoCursor")

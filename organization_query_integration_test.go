@@ -23,10 +23,7 @@ var cachedRepos []Repository
 // Helper function to fetch the repos once, but allow multiple tests against results
 func GetReposHelper() []Repository {
 	if cachedRepos == nil {
-		client := buildClient()
-		vars := buildVariables()
-		var oq OrganizationQuery
-		cachedRepos = runOrganizationQuery(client, &oq, vars)
+		cachedRepos = runOrganizationQuery()
 	}
 	return cachedRepos
 }

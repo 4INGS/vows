@@ -43,14 +43,21 @@ type BranchProtectionRule struct {
 	requiresStrictStatusChecks   bool
 }
 
-func buildVariables() map[string]interface{} {
+func runOrganizationQuery() []Repository {
+	var query OrganizationQuery
+	client := buildClient()
+	vars := buildOrgVariables()
+	return executeQuery(client, &query, vars)
+}
+
+func buildOrgVariables() map[string]interface{} {
 	return map[string]interface{}{
 		"login":      githubv4.String("RepoFetch"),
 		"repoCursor": (*githubv4.String)(nil),
 	}
 }
 
-func runOrganizationQuery(client *githubv4.Client, query *OrganizationQuery, variables map[string]interface{}) []Repository {
+func executeQuery(client *githubv4.Client, query *OrganizationQuery, variables map[string]interface{}) []Repository {
 	var allRepos []Repository
 	for {
 		err := client.Query(context.Background(), &query, variables)

@@ -37,3 +37,10 @@ type BranchProtectionRule struct {
 	IsAdminEnforced              bool
 	RequiresStrictStatusChecks   bool
 }
+
+// CreateRuleMutation will create a branch protection rule in Github
+type CreateRuleMutation struct {
+	CreateBranchProtectionRule struct {
+		ClientMutationID string
+	} `graphql:"createBranchProtectionRule(input: $input)"`
+}

@@ -29,6 +29,7 @@ type Repository struct {
 
 // BranchProtectionRule is the branch rules applied to a repository
 type BranchProtectionRule struct {
+	ID                           string
 	Pattern                      string
 	RequiresStatusChecks         bool
 	RequiresApprovingReviews     bool
@@ -41,6 +42,14 @@ type BranchProtectionRule struct {
 // CreateRuleMutation will create a branch protection rule in Github
 type CreateRuleMutation struct {
 	CreateBranchProtectionRule struct {
-		ClientMutationID string
+		ClientMutationID     string
+		BranchProtectionRule BranchProtectionRule
 	} `graphql:"createBranchProtectionRule(input: $input)"`
+}
+
+// UpdateBranchProtectionRuleMutation will update the rule in Github
+type UpdateBranchProtectionRuleMutation struct {
+	UpdateBranchProtectionRule struct {
+		ClientMutationID string
+	} `graphql:"updateBranchProtectionRule(input: $input)"`
 }

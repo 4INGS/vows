@@ -3,7 +3,8 @@ package main
 import "errors"
 
 type protector interface {
-	applyBranchProtection(id string)
+	addBranchProtection(repoID string)
+	updateBranchProtection(repoID string, rule BranchProtectionRule)
 }
 
 // ApplyBranchProtection does things
@@ -14,18 +15,22 @@ func ApplyBranchProtection(repos []Repository, whitelist []string, protector pro
 	// Loop over repos
 	for _, v := range repos {
 		// Skip if in white list
-		if !Contains(whitelist, v.ID) {
-			skipProtect := false
+		if Contains(whitelist, v.ID) {
+			continue
+		}
 
-			// Check if branch protection already in place and correct
-			for _, r := range v.BranchProtectionRules.Nodes {
-				if ValidBranchProtectionRule(r) {
-					skipProtect = true
+		var ruleSet = false
+		// Check if branch protection already in place and correct
+		for _, r := range v.BranchProtectionRules.Nodes {
+			if r.Pattern == "master" {
+				if !ValidBranchProtectionRule(r) {
+					protector.updateBranchProtection(v.ID, r)
 				}
+				ruleSet = true
 			}
-			if !skipProtect {
-				protector.applyBranchProtection(v.ID)
-			}
+		}
+		if !ruleSet {
+			protector.addBranchProtection(v.ID)
 		}
 	}
 	return nil
@@ -34,8 +39,7 @@ func ApplyBranchProtection(repos []Repository, whitelist []string, protector pro
 // ValidBranchProtectionRule checks to see if a branch protection matches the standards
 func ValidBranchProtectionRule(rule BranchProtectionRule) bool {
 	// TODO, allow this to be set in a configuration file or something
-	return rule.Pattern == "master" &&
-		rule.RequiresStatusChecks == true &&
+	return rule.RequiresStatusChecks == true &&
 		rule.RequiresApprovingReviews == true &&
 		rule.RequiredApprovingReviewCount > 0 &&
 		rule.DismissesStaleReviews == true &&

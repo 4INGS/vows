@@ -16,7 +16,7 @@ func runOrganizationQuery() []Repository {
 
 func buildOrgVariables() map[string]interface{} {
 	return map[string]interface{}{
-		"login":      githubv4.String("RepoFetch"),
+		"login":      githubv4.String(fetchOrganization()),
 		"repoCursor": (*githubv4.String)(nil),
 	}
 }

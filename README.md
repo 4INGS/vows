@@ -17,7 +17,7 @@ You will need to set some configuration before running the program.  Your token 
 ```
 export GITHUB_TOKEN={Github Token here}
 export GITHUB_ORG={Organization name here}
-./github-management-ops
+./vows
 ```
 
 ## Testing
@@ -26,6 +26,7 @@ Run unit tests
 go test
 ```
 Run integration tests
+Note: This will attempt to add and remove branch protection rules on this repo in Github
 ```
 export GITHUB_TEST_REPOSITORY_ID={RepoIDYouDoNotCareAbout}
 go test -tags=integration

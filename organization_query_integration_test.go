@@ -10,9 +10,7 @@ import (
 
 func TestFetchRepositories(t *testing.T) {
 	repos := GetReposHelper()
-	//assert.Equal(t, "RepoFetch", oq.Organization.Name)
-	assert.Len(t, repos, 1, "Incorrect number of repos found")
-	//assert.True(t, len(repos) > 200, "Repo count not large enough, only at ", len(repos))
+	assert.True(t, len(repos) > 0, "No repositories found in the organization")
 }
 
 func TestFetchBranchProtection(t *testing.T) {

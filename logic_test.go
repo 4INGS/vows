@@ -12,11 +12,14 @@ type mockprotector struct {
 	mock.Mock
 }
 
-func (m *mockprotector) addBranchProtection(id string) {
+func (m *mockprotector) AddBranchProtection(id string) (BranchProtectionRule, error) {
 	m.Called(id)
+	var br BranchProtectionRule
+	return br, nil
 }
-func (m *mockprotector) updateBranchProtection(id string, r BranchProtectionRule) {
+func (m *mockprotector) UpdateBranchProtection(id string, r BranchProtectionRule) error {
 	m.Called(id)
+	return nil
 }
 
 func TestNoProtector(t *testing.T) {
@@ -35,8 +38,7 @@ func TestNoProtector(t *testing.T) {
 func TestSingleRepo(t *testing.T) {
 	// Setup
 	testObj := new(mockprotector)
-	testObj.On("addBranchProtection", mock.AnythingOfType("string")).Return()
-	//testObj.On("updateBranchProtection", mock.AnythingOfType("string"), mock.AnythingOfType("BranchProtectionRule")).Return()
+	testObj.On("AddBranchProtection", mock.AnythingOfType("string")).Return()
 	repos := []Repository{
 		Repository{
 			ID: "123",
@@ -45,13 +47,13 @@ func TestSingleRepo(t *testing.T) {
 	// Execute
 	ApplyBranchProtection(repos, nil, testObj)
 	// Verify
-	testObj.AssertNumberOfCalls(t, "addBranchProtection", 1)
+	testObj.AssertNumberOfCalls(t, "AddBranchProtection", 1)
 }
 
 func TestMultiRepo(t *testing.T) {
 	// Setup
 	testObj := new(mockprotector)
-	testObj.On("addBranchProtection", mock.AnythingOfType("string")).Return()
+	testObj.On("AddBranchProtection", mock.AnythingOfType("string")).Return()
 	repos := []Repository{
 		Repository{
 			ID: "123",
@@ -63,13 +65,13 @@ func TestMultiRepo(t *testing.T) {
 	// Execute
 	ApplyBranchProtection(repos, nil, testObj)
 	// Verify
-	testObj.AssertNumberOfCalls(t, "addBranchProtection", 2)
+	testObj.AssertNumberOfCalls(t, "AddBranchProtection", 2)
 }
 
 func TestSkipWhiteList(t *testing.T) {
 	// Setup
 	testObj := new(mockprotector)
-	testObj.On("addBranchProtection", mock.AnythingOfType("string")).Return()
+	testObj.On("AddBranchProtection", mock.AnythingOfType("string")).Return()
 	repos := []Repository{
 		Repository{
 			ID: "123",
@@ -79,24 +81,24 @@ func TestSkipWhiteList(t *testing.T) {
 	// Execute
 	ApplyBranchProtection(repos, whitelist, testObj)
 	// Verify
-	testObj.AssertNumberOfCalls(t, "addBranchProtection", 0)
+	testObj.AssertNumberOfCalls(t, "AddBranchProtection", 0)
 }
 
 func TestCorrectBranchProtections(t *testing.T) {
 	// Setup
 	testObj := new(mockprotector)
-	testObj.On("addBranchProtection", mock.AnythingOfType("string")).Return()
+	testObj.On("AddBranchProtection", mock.AnythingOfType("string")).Return()
 	repos := mockCorrectRepos()
 	// Execute
 	ApplyBranchProtection(repos, nil, testObj)
 	// Verify
-	testObj.AssertNumberOfCalls(t, "addBranchProtection", 0)
+	testObj.AssertNumberOfCalls(t, "AddBranchProtection", 0)
 }
 
 func TestIncorrectRequiresStatusChecks(t *testing.T) {
 	// Setup
 	testObj := new(mockprotector)
-	testObj.On("updateBranchProtection", mock.AnythingOfType("string")).Return()
+	testObj.On("UpdateBranchProtection", mock.AnythingOfType("string")).Return()
 	repos := mockCorrectRepos()
 	//Break a rule
 	repos[0].BranchProtectionRules.Nodes[0].RequiresStatusChecks = false
@@ -104,12 +106,12 @@ func TestIncorrectRequiresStatusChecks(t *testing.T) {
 	// Execute
 	ApplyBranchProtection(repos, nil, testObj)
 	// Verify
-	testObj.AssertNumberOfCalls(t, "updateBranchProtection", 1)
+	testObj.AssertNumberOfCalls(t, "UpdateBranchProtection", 1)
 }
 func TestIncorrectIsAdminEnforced(t *testing.T) {
 	// Setup
 	testObj := new(mockprotector)
-	testObj.On("updateBranchProtection", mock.AnythingOfType("string")).Return()
+	testObj.On("UpdateBranchProtection", mock.AnythingOfType("string")).Return()
 	repos := mockCorrectRepos()
 	//Break a rule
 	repos[0].BranchProtectionRules.Nodes[0].IsAdminEnforced = false
@@ -117,12 +119,12 @@ func TestIncorrectIsAdminEnforced(t *testing.T) {
 	// Execute
 	ApplyBranchProtection(repos, nil, testObj)
 	// Verify
-	testObj.AssertNumberOfCalls(t, "updateBranchProtection", 1)
+	testObj.AssertNumberOfCalls(t, "UpdateBranchProtection", 1)
 }
 func TestIncorrectReviewCount(t *testing.T) {
 	// Setup
 	testObj := new(mockprotector)
-	testObj.On("updateBranchProtection", mock.AnythingOfType("string")).Return()
+	testObj.On("UpdateBranchProtection", mock.AnythingOfType("string")).Return()
 	repos := mockCorrectRepos()
 	//Break a rule
 	repos[0].BranchProtectionRules.Nodes[0].RequiredApprovingReviewCount = 0
@@ -130,7 +132,7 @@ func TestIncorrectReviewCount(t *testing.T) {
 	// Execute
 	ApplyBranchProtection(repos, nil, testObj)
 	// Verify
-	testObj.AssertNumberOfCalls(t, "updateBranchProtection", 1)
+	testObj.AssertNumberOfCalls(t, "UpdateBranchProtection", 1)
 }
 
 func mockCorrectRepos() []Repository {

@@ -3,8 +3,8 @@ package main
 import "errors"
 
 type protector interface {
-	addBranchProtection(repoID string)
-	updateBranchProtection(repoID string, rule BranchProtectionRule)
+	AddBranchProtection(repoID string) (BranchProtectionRule, error)
+	UpdateBranchProtection(repoID string, rule BranchProtectionRule) error
 }
 
 // ApplyBranchProtection does things
@@ -24,13 +24,13 @@ func ApplyBranchProtection(repos []Repository, whitelist []string, protector pro
 		for _, r := range v.BranchProtectionRules.Nodes {
 			if r.Pattern == "master" {
 				if !ValidBranchProtectionRule(r) {
-					protector.updateBranchProtection(v.ID, r)
+					protector.UpdateBranchProtection(v.ID, r)
 				}
 				ruleSet = true
 			}
 		}
 		if !ruleSet {
-			protector.addBranchProtection(v.ID)
+			protector.AddBranchProtection(v.ID)
 		}
 	}
 	return nil

@@ -11,12 +11,12 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestAddBranchProtectionMutationInvalidID(t *testing.T) {
-	_, err := AddBranchProtectionMutation("123")
+func TestAddBranchProtectionInvalidID(t *testing.T) {
+	_, err := AddBranchProtection("123")
 	assert.NotNil(t, err)
 }
 
-func TestAddBranchProtectionMutationValidID(t *testing.T) {
+func TestAddBranchProtectionValidID(t *testing.T) {
 	// Setup: This test requires a Repository ID to run.
 	repoID, err := fetchTestRepositoryID()
 	if err != nil {
@@ -25,7 +25,7 @@ func TestAddBranchProtectionMutationValidID(t *testing.T) {
 	}
 
 	// Add protection
-	rule, err2 := AddBranchProtectionMutation(repoID)
+	rule, err2 := AddBranchProtection(repoID)
 	assert.Nil(t, err2)
 	assert.NotEmpty(t, rule.ID, "No branch rule ID returned from the mutation")
 
@@ -34,7 +34,7 @@ func TestAddBranchProtectionMutationValidID(t *testing.T) {
 	assert.Nil(t, err3, "Unable to remove the added branch protection.  Please remove manually")
 }
 
-func TestUpdateBranchProtectionMutationValidID(t *testing.T) {
+func TestUpdateBranchProtectionValidID(t *testing.T) {
 	// Setup: This test requires a Repository ID to run.
 	repoID, err := fetchTestRepositoryID()
 	if err != nil {
@@ -43,12 +43,12 @@ func TestUpdateBranchProtectionMutationValidID(t *testing.T) {
 	}
 
 	// Add protection
-	rule, err2 := AddBranchProtectionMutation(repoID)
+	rule, err2 := AddBranchProtection(repoID)
 	assert.Nil(t, err2)
 	assert.NotEmpty(t, rule.ID, "No branch rule ID returned from the mutation")
 
 	// Update protection
-	err3 := UpdateBranchProtectionMutation(repoID, rule)
+	err3 := UpdateBranchProtection(repoID, rule)
 	assert.Nil(t, err3)
 
 	// Clean up
@@ -58,7 +58,7 @@ func TestUpdateBranchProtectionMutationValidID(t *testing.T) {
 
 // This will attempt to clean up after a test
 // Helper function only for now.
-type DeleteBranchProtectionRuleMutation struct {
+type DeleteBranchProtectionRule struct {
 	DeleteBranchProtectionRule struct {
 		ClientMutationID string
 	} `graphql:"deleteBranchProtectionRule(input: $input)"`
@@ -68,7 +68,7 @@ func helperRemoveBranchProtectionRule(ruleID string) error {
 	input := githubv4.DeleteBranchProtectionRuleInput{
 		BranchProtectionRuleID: ruleID,
 	}
-	var m DeleteBranchProtectionRuleMutation
+	var m DeleteBranchProtectionRule
 	client := buildClient()
 	err := client.Mutate(context.Background(), &m, input, nil)
 	return err

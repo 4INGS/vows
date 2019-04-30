@@ -6,8 +6,11 @@ import (
 	"github.com/shurcooL/githubv4"
 )
 
-// AddBranchProtectionMutation will call the Github mutation to add branch protections
-func AddBranchProtectionMutation(repoID string) (BranchProtectionRule, error) {
+// GithubProtector applies and updates branch protections
+type GithubProtector struct{}
+
+// AddBranchProtection will call the Github mutation to add branch protections
+func (p GithubProtector) AddBranchProtection(repoID string) (BranchProtectionRule, error) {
 
 	// TODO: Allow this to be set in configuration
 	input := githubv4.CreateBranchProtectionRuleInput{
@@ -29,8 +32,8 @@ func AddBranchProtectionMutation(repoID string) (BranchProtectionRule, error) {
 	return m.CreateBranchProtectionRule.BranchProtectionRule, err
 }
 
-// UpdateBranchProtectionMutation will correct the settings on a branch protection
-func UpdateBranchProtectionMutation(repoID string, rule BranchProtectionRule) error {
+// UpdateBranchProtection will correct the settings on a branch protection
+func (p GithubProtector) UpdateBranchProtection(repoID string, rule BranchProtectionRule) error {
 
 	// TODO: Allow this to be set in configuration
 	input := githubv4.UpdateBranchProtectionRuleInput{

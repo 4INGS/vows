@@ -15,8 +15,12 @@ func runOrganizationQuery() []Repository {
 }
 
 func buildOrgVariables() map[string]interface{} {
+	org, err := fetchOrganization()
+	if err != nil {
+		panic(fmt.Sprintf("Unable to build organization variables: %s", err.Error()))
+	}
 	return map[string]interface{}{
-		"login":      githubv4.String("RepoFetch"),
+		"login":      githubv4.String(org),
 		"repoCursor": (*githubv4.String)(nil),
 	}
 }

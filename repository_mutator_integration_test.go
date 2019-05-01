@@ -12,12 +12,15 @@ import (
 )
 
 func TestAddBranchProtectionInvalidID(t *testing.T) {
-	_, err := AddBranchProtection("123")
+	configInit()
+	var gp GithubProtector
+	_, err := gp.AddBranchProtection("123")
 	assert.NotNil(t, err)
 }
 
 func TestAddBranchProtectionValidID(t *testing.T) {
 	// Setup: This test requires a Repository ID to run.
+	configInit()
 	repoID, err := fetchTestRepositoryID()
 	if err != nil {
 		assert.Fail(t, err.Error())
@@ -25,7 +28,8 @@ func TestAddBranchProtectionValidID(t *testing.T) {
 	}
 
 	// Add protection
-	rule, err2 := AddBranchProtection(repoID)
+	var gp GithubProtector
+	rule, err2 := gp.AddBranchProtection(repoID)
 	assert.Nil(t, err2)
 	assert.NotEmpty(t, rule.ID, "No branch rule ID returned from the mutation")
 
@@ -36,6 +40,7 @@ func TestAddBranchProtectionValidID(t *testing.T) {
 
 func TestUpdateBranchProtectionValidID(t *testing.T) {
 	// Setup: This test requires a Repository ID to run.
+	configInit()
 	repoID, err := fetchTestRepositoryID()
 	if err != nil {
 		assert.Fail(t, err.Error())
@@ -43,12 +48,13 @@ func TestUpdateBranchProtectionValidID(t *testing.T) {
 	}
 
 	// Add protection
-	rule, err2 := AddBranchProtection(repoID)
+	var gp GithubProtector
+	rule, err2 := gp.AddBranchProtection(repoID)
 	assert.Nil(t, err2)
 	assert.NotEmpty(t, rule.ID, "No branch rule ID returned from the mutation")
 
 	// Update protection
-	err3 := UpdateBranchProtection(repoID, rule)
+	err3 := gp.UpdateBranchProtection(repoID, rule)
 	assert.Nil(t, err3)
 
 	// Clean up

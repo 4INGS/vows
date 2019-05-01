@@ -9,11 +9,13 @@ import (
 )
 
 func TestFetchRepositories(t *testing.T) {
+	configInit()
 	repos := GetReposHelper()
 	assert.True(t, len(repos) > 0, "No repositories found in the organization")
 }
 
 func TestFetchBranchProtection(t *testing.T) {
+	configInit()
 	repos := GetReposHelper()
 	assert.NotNil(t, repos[0].Name, "No name found")
 }

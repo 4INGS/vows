@@ -12,6 +12,7 @@ import (
 )
 
 func TestAddBranchProtectionInvalidID(t *testing.T) {
+	configInit()
 	var gp GithubProtector
 	_, err := gp.AddBranchProtection("123")
 	assert.NotNil(t, err)
@@ -19,6 +20,7 @@ func TestAddBranchProtectionInvalidID(t *testing.T) {
 
 func TestAddBranchProtectionValidID(t *testing.T) {
 	// Setup: This test requires a Repository ID to run.
+	configInit()
 	repoID, err := fetchTestRepositoryID()
 	if err != nil {
 		assert.Fail(t, err.Error())
@@ -38,6 +40,7 @@ func TestAddBranchProtectionValidID(t *testing.T) {
 
 func TestUpdateBranchProtectionValidID(t *testing.T) {
 	// Setup: This test requires a Repository ID to run.
+	configInit()
 	repoID, err := fetchTestRepositoryID()
 	if err != nil {
 		assert.Fail(t, err.Error())

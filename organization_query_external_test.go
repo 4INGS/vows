@@ -1,5 +1,3 @@
-// +build integration
-
 package main
 
 import (
@@ -9,13 +7,17 @@ import (
 )
 
 func TestFetchRepositories(t *testing.T) {
-	configInit()
+	if !*externalTests {
+		return
+	}
 	repos := GetReposHelper()
 	assert.True(t, len(repos) > 0, "No repositories found in the organization")
 }
 
 func TestFetchBranchProtection(t *testing.T) {
-	configInit()
+	if !*externalTests {
+		return
+	}
 	repos := GetReposHelper()
 	assert.NotNil(t, repos[0].Name, "No name found")
 }

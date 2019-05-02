@@ -2,55 +2,11 @@ package main
 
 import (
 	"bytes"
-	"fmt"
-	"os"
-	"os/exec"
-	"path"
 	"testing"
 
 	"github.com/spf13/viper"
 	"github.com/stretchr/testify/assert"
 )
-
-func TestMain(m *testing.M) {
-	// Setup
-	build := exec.Command("go", "build")
-	err := build.Run()
-	if err != nil {
-		panic(fmt.Sprintf("Unable to build project: %s", err.Error()))
-	}
-	configInit()
-
-	code := m.Run()
-
-	// Teardown
-	os.Exit(code)
-}
-
-func TestProgramWithEnvironmentVariable(t *testing.T) {
-	// Setup the program
-	binaryName := "vows"
-	dir, err := os.Getwd()
-	vows := exec.Command(path.Join(dir, binaryName))
-	vows.Env = append(os.Environ(), "VOWS_GITHUB_ORG=bluewasher")
-
-	// Run and verify the output
-	output, err := vows.CombinedOutput()
-	assert.Nil(t, err)
-	assert.Contains(t, string(output), "bluewasher")
-}
-
-func TestProgramWithParameter(t *testing.T) {
-	// Setup the program
-	binaryName := "vows"
-	dir, err := os.Getwd()
-	vows := exec.Command(path.Join(dir, binaryName), "--github_org=redslide")
-
-	// Run and verify the output
-	output, err := vows.CombinedOutput()
-	assert.Nil(t, err)
-	assert.Contains(t, string(output), "redslide")
-}
 
 func TestProgramWithConfigfile(t *testing.T) {
 	var jsonExample = []byte(`{"car": "hatchback"}`)

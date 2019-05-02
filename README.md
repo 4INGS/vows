@@ -5,22 +5,44 @@ Apply a standard set of rules to all Github repositories in an organization
 ```
 go build
 ```
-## Configure
+
+## Running
+Super simple, just run:
+```
+./vows
+```
+
+## Ignore List
 You can supply a list of repos that should be ignored.
 ```
 RepoName1
 RepoName2
 ```
 
-## Running
-You will need to set some configuration before running the program.  Your token can be created by following [these instructions](https://help.github.com/en/articles/creating-a-personal-access-token-for-the-command-line).
+## Configuration
+| Key | Example Value | Details |
+| --- | ------------- | ------- |
+|github_token|xxxxxxxxxxxxx|Github access token, Your token can be created by following [these instructions](https://help.github.com/en/articles/creating-a-personal-access-token-for-the-command-line)|
+|github_org|MyAwesomeOrg|The Github organization to work against|
+|preview|false|Do not take any action, only print a list of actions that would be taken|
+|debug|true|If the program should print out debugging information|
+|github_test_repository_id|xxxxxxxxxxxxxxxxxxxx|The internal github repository id to use for external tests|
+
+These can be configured through either
+* Environment Variables
+* Configuration file
+* Command line parameters
+
+You can specify configuration in any or all of the methods listed.  For example, Github tokens can be sent in through environment variables, while the debug option is listed on the command line.
+
+### Environment Variables
+All keys should be prefixed with "VOWS_" when setting through an environment variable.  Environment variables should be all UPPER CASE.
 ```
 export VOWS_GITHUB_TOKEN={Github Token here}
 export VOWS_GITHUB_ORG={Organization name here}
-./vows
 ```
 
-## Config file
+### Config file
 You can also configure the application using a json configuration file
 ```
 {
@@ -28,14 +50,29 @@ You can also configure the application using a json configuration file
     "GITHUB_TOKEN":"Your_Token_Here"
 }
 ```
+### Command line configuration
+```
+./vows -github_org=myorg -debug=true -preview=true
+```
+
+
 
 ## Testing
-Run unit tests
+
+### Unit tests
+These are very fast tests (less then 1 second) to verify internal logic 
 ```
 go test
 ```
-Run integration tests
-Note: This will attempt to add and remove branch protection rules on this repo in Github
+### Integration tests
+These tests take a bit longer, but verify the system bounderies are correct
+```
+go test -integration
+```
+
+### External tests
+Slower tests that exercise external systems
+Note: These require a configuration value for GITHUB_TEST_REPOSITORY_ID. This will attempt to add and remove branch protection rules on this repo in Github
 ```
 export GITHUB_TEST_REPOSITORY_ID={RepoIDYouDoNotCareAbout}
 go test -tags=integration

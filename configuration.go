@@ -42,11 +42,11 @@ var configs = []configuration{
 		Abbreviation: "r",
 		HelpText:     "Only used for integraion tests.  Branch rules will be created and removed on this repo",
 	},
-	configuration{
-		Name:         "debug",
-		Abbreviation: "d",
-		HelpText:     "Enable debug logging",
-	},
+	// configuration{
+	// 	Name:         "debug",
+	// 	Abbreviation: "d",
+	// 	HelpText:     "Enable debug logging",
+	// },
 }
 
 func configInit() {
@@ -68,11 +68,16 @@ func configInit() {
 	}
 
 	// Setup command line flags
+	// Ignore unknown flags
+	et := pflag.ParseErrorsWhitelist{UnknownFlags: true}
+	pflag.CommandLine.ParseErrorsWhitelist = et
 	for _, config := range configs {
 		pflag.StringP(strings.ToLower(config.Name), config.Abbreviation, config.Default, config.HelpText)
-		pflag.Parse()
-		viper.BindPFlags(pflag.CommandLine)
+
 	}
+	pflag.BoolP("debug", "d", false, "Enable Debug Logging")
+	pflag.Parse()
+	viper.BindPFlags(pflag.CommandLine)
 }
 
 func getConfigValue(key string) (string, error) {
@@ -98,4 +103,11 @@ func fetchTestRepositoryID() (string, error) {
 
 func setConfigValue(key string, value string) {
 	viper.Set(key, value)
+}
+
+func printConfiguration() {
+	fmt.Println("Printing Debug Configuration")
+	for _, key := range viper.AllKeys() {
+		fmt.Printf("Configuration %s=%s\n", key, viper.Get(key))
+	}
 }

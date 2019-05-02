@@ -1,14 +1,15 @@
 package main
 
 import (
-	"fmt"
 	"os"
 )
 
 func main() {
 	configInit()
-	value, _ := getConfigValue("GITHUB_ORG")
-	fmt.Println(value)
+	debug, _ := getConfigValue("debug")
+	if debug == "true" {
+		printConfiguration()
+	}
 	//runOrganizationQuery()
 	// repos := runOrganizationQuery()
 	// var gp GithubProtector

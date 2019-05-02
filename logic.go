@@ -1,6 +1,9 @@
 package main
 
-import "errors"
+import (
+	"errors"
+	"fmt"
+)
 
 type protector interface {
 	AddBranchProtection(repoID string) (BranchProtectionRule, error)
@@ -24,13 +27,21 @@ func ApplyBranchProtection(repos []Repository, whitelist []string, protector pro
 		for _, r := range v.BranchProtectionRules.Nodes {
 			if r.Pattern == "master" {
 				if !ValidBranchProtectionRule(r) {
-					protector.UpdateBranchProtection(v.ID, r)
+					if isPreview() {
+						fmt.Printf("Repo %s: Incorrect branch protection found and would be updated.\n", v.Name)
+					} else {
+						protector.UpdateBranchProtection(v.ID, r)
+					}
 				}
 				ruleSet = true
 			}
 		}
 		if !ruleSet {
-			protector.AddBranchProtection(v.ID)
+			if isPreview() {
+				fmt.Printf("Repo %s: No branch protection found and would be added.\n", v.Name)
+			} else {
+				protector.AddBranchProtection(v.ID)
+			}
 		}
 	}
 	return nil

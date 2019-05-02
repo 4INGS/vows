@@ -26,7 +26,7 @@ func TestNoProtector(t *testing.T) {
 	// Setup
 	repos := []Repository{
 		Repository{
-			ID: "123",
+			ID: "834",
 		},
 	}
 	// Execute
@@ -38,10 +38,11 @@ func TestNoProtector(t *testing.T) {
 func TestSingleRepo(t *testing.T) {
 	// Setup
 	testObj := new(mockprotector)
-	testObj.On("AddBranchProtection", mock.AnythingOfType("string")).Return()
+	//testObj.On("AddBranchProtection", mock.AnythingOfType("string")).Return()
+	testObj.On("AddBranchProtection", "456").Return()
 	repos := []Repository{
 		Repository{
-			ID: "123",
+			ID: "456",
 		},
 	}
 	// Execute
@@ -56,10 +57,10 @@ func TestMultiRepo(t *testing.T) {
 	testObj.On("AddBranchProtection", mock.AnythingOfType("string")).Return()
 	repos := []Repository{
 		Repository{
-			ID: "123",
+			ID: "345",
 		},
 		Repository{
-			ID: "456",
+			ID: "567",
 		},
 	}
 	// Execute
@@ -98,7 +99,7 @@ func TestCorrectBranchProtections(t *testing.T) {
 func TestIncorrectRequiresStatusChecks(t *testing.T) {
 	// Setup
 	testObj := new(mockprotector)
-	testObj.On("UpdateBranchProtection", mock.AnythingOfType("string")).Return()
+	testObj.On("UpdateBranchProtection", "2468").Return()
 	repos := mockCorrectRepos()
 	//Break a rule
 	repos[0].BranchProtectionRules.Nodes[0].RequiresStatusChecks = false
@@ -111,7 +112,7 @@ func TestIncorrectRequiresStatusChecks(t *testing.T) {
 func TestIncorrectIsAdminEnforced(t *testing.T) {
 	// Setup
 	testObj := new(mockprotector)
-	testObj.On("UpdateBranchProtection", mock.AnythingOfType("string")).Return()
+	testObj.On("UpdateBranchProtection", "2468").Return()
 	repos := mockCorrectRepos()
 	//Break a rule
 	repos[0].BranchProtectionRules.Nodes[0].IsAdminEnforced = false
@@ -124,7 +125,7 @@ func TestIncorrectIsAdminEnforced(t *testing.T) {
 func TestIncorrectReviewCount(t *testing.T) {
 	// Setup
 	testObj := new(mockprotector)
-	testObj.On("UpdateBranchProtection", mock.AnythingOfType("string")).Return()
+	testObj.On("UpdateBranchProtection", "2468").Return()
 	repos := mockCorrectRepos()
 	//Break a rule
 	repos[0].BranchProtectionRules.Nodes[0].RequiredApprovingReviewCount = 0
@@ -135,10 +136,43 @@ func TestIncorrectReviewCount(t *testing.T) {
 	testObj.AssertNumberOfCalls(t, "UpdateBranchProtection", 1)
 }
 
+func TestPreviewModeAdd(t *testing.T) {
+	// Setup
+	setConfigValue("preview", "true")
+	testObj := new(mockprotector)
+	testObj.On("AddBranchProtection", "456").Return()
+	repos := []Repository{
+		Repository{
+			ID:   "456",
+			Name: "test-preview-repo",
+		},
+	}
+	// Execute
+	ApplyBranchProtection(repos, nil, testObj)
+	// Verify
+	testObj.AssertNumberOfCalls(t, "AddBranchProtection", 0)
+}
+
+func TestPreviewModeUpdate(t *testing.T) {
+	// Setup
+	setConfigValue("preview", "true")
+	testObj := new(mockprotector)
+	testObj.On("UpdateBranchProtection", "2468").Return()
+	repos := mockCorrectRepos()
+	//Break a rule
+	repos[0].BranchProtectionRules.Nodes[0].RequiresStatusChecks = false
+
+	// Execute
+	ApplyBranchProtection(repos, nil, testObj)
+	// Verify
+	testObj.AssertNumberOfCalls(t, "UpdateBranchProtection", 0)
+}
+
 func mockCorrectRepos() []Repository {
 	repos := []Repository{
 		Repository{
-			ID: "123",
+			ID:   "2468",
+			Name: "test-repo",
 			BranchProtectionRules: struct {
 				Nodes []BranchProtectionRule
 			}{

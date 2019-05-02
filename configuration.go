@@ -42,11 +42,12 @@ var configs = []configuration{
 		Abbreviation: "r",
 		HelpText:     "Only used for integraion tests.  Branch rules will be created and removed on this repo",
 	},
-	// configuration{
-	// 	Name:         "debug",
-	// 	Abbreviation: "d",
-	// 	HelpText:     "Enable debug logging",
-	// },
+	configuration{
+		Name:         "preview",
+		Abbreviation: "p",
+		HelpText:     "Enable debug logging",
+		Default:      "false",
+	},
 }
 
 func configInit() {
@@ -99,6 +100,18 @@ func fetchOrganization() (string, error) {
 
 func fetchTestRepositoryID() (string, error) {
 	return getConfigValue(GithubTestRepositoryID)
+}
+
+func isDebug() bool {
+	value, _ := getConfigValue("debug")
+	return value == "true"
+}
+func isPreview() bool {
+	value, err := getConfigValue("preview")
+	if err != nil {
+		panic("Unable to determine if in preview mode " + err.Error())
+	}
+	return value == "true"
 }
 
 func setConfigValue(key string, value string) {

@@ -2,6 +2,9 @@ package main
 
 import (
 	"fmt"
+	"strings"
+
+	"github.com/spf13/pflag"
 
 	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/viper"
@@ -16,17 +19,41 @@ const GithubOrganization = "GITHUB_ORG"
 // GithubTestRepositoryID is only used for integraion tests.  Branch rules will be created and removed on this repo.
 const GithubTestRepositoryID = "GITHUB_TEST_REPOSITORY_ID"
 
-var keys = []string{
-	GithubToken,
-	GithubOrganization,
-	GithubTestRepositoryID,
+type configuration struct {
+	Name         string
+	Abbreviation string
+	Default      string
+	HelpText     string
+}
+
+var configs = []configuration{
+	configuration{
+		Name:         GithubOrganization,
+		Abbreviation: "o",
+		HelpText:     "The organization name in Github that rules are enforced against",
+	},
+	configuration{
+		Name:         GithubToken,
+		Abbreviation: "t",
+		HelpText:     "The security token used by the app.  It must be for an account that has branch protection write permissions.  More details at https://help.github.com/en/articles/creating-a-personal-access-token-for-the-command-line",
+	},
+	configuration{
+		Name:         GithubTestRepositoryID,
+		Abbreviation: "r",
+		HelpText:     "Only used for integraion tests.  Branch rules will be created and removed on this repo",
+	},
+	configuration{
+		Name:         "debug",
+		Abbreviation: "d",
+		HelpText:     "Enable debug logging",
+	},
 }
 
 func configInit() {
 	// Setup environment
 	viper.SetEnvPrefix("vows")
-	for _, k := range keys {
-		viper.BindEnv(k)
+	for _, config := range configs {
+		viper.BindEnv(strings.ToUpper(config.Name))
 	}
 
 	// Setup config file
@@ -38,6 +65,13 @@ func configInit() {
 		viper.OnConfigChange(func(e fsnotify.Event) {
 			fmt.Println("Config file changed:", e.Name)
 		})
+	}
+
+	// Setup command line flags
+	for _, config := range configs {
+		pflag.StringP(strings.ToLower(config.Name), config.Abbreviation, config.Default, config.HelpText)
+		pflag.Parse()
+		viper.BindPFlags(pflag.CommandLine)
 	}
 }
 
@@ -60,4 +94,8 @@ func fetchOrganization() (string, error) {
 
 func fetchTestRepositoryID() (string, error) {
 	return getConfigValue(GithubTestRepositoryID)
+}
+
+func setConfigValue(key string, value string) {
+	viper.Set(key, value)
 }

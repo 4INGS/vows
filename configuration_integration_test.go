@@ -17,7 +17,7 @@ func TestProgramWithEnvironmentVariable(t *testing.T) {
 	// Setup the program
 	binaryName := "vows"
 	dir, err := os.Getwd()
-	vows := exec.Command(path.Join(dir, binaryName), "--debug=true")
+	vows := exec.Command(path.Join(dir, binaryName), "--debug=true", "--preview=true")
 	vows.Env = append(os.Environ(), "VOWS_GITHUB_ORG=bluewasher")
 
 	// Run and verify the output
@@ -33,7 +33,7 @@ func TestProgramWithParameter(t *testing.T) {
 	// Setup the program
 	binaryName := "vows"
 	dir, err := os.Getwd()
-	vows := exec.Command(path.Join(dir, binaryName), "--github_org=redslide", "--debug=true")
+	vows := exec.Command(path.Join(dir, binaryName), "--github_org=redslide", "--debug=true", "--preview=true")
 
 	// Run and verify the output
 	output, err := vows.CombinedOutput()

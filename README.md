@@ -57,6 +57,12 @@ You can also configure the application using a json configuration file
 ./vows --github_org=myorg --debug=true --preview=true
 ```
 
+### Token Permissions
+This app needs **repo** and **organizations** permissions
+![token permissions](assets/repo-permissions.png)
+
+You can create the token at [this link](https://help.github.com/en/articles/creating-a-personal-access-token-for-the-command-line)
+
 ## Testing
 
 ### Unit tests

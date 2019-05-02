@@ -1,5 +1,7 @@
 # Vows
-Apply a standard set of rules to all Github repositories in an organization
+Apply a standard set of rules to all Github repositories in an organization.
+
+Loops over all the repositories in your organization and sets branch protections on the master branch.  These branch protections are currently hard coded, but a future enhancement will allow these to be customized to your needs.
 
 ## Building
 ```
@@ -52,10 +54,8 @@ You can also configure the application using a json configuration file
 ```
 ### Command line configuration
 ```
-./vows -github_org=myorg -debug=true -preview=true
+./vows --github_org=myorg --debug=true --preview=true
 ```
-
-
 
 ## Testing
 
@@ -64,10 +64,11 @@ These are very fast tests (less then 1 second) to verify internal logic
 ```
 go test
 ```
+
 ### Integration tests
 These tests take a bit longer, but verify the system bounderies are correct
 ```
-go test -integration
+go test --integration
 ```
 
 ### External tests
@@ -75,5 +76,6 @@ Slower tests that exercise external systems
 Note: These require a configuration value for GITHUB_TEST_REPOSITORY_ID. This will attempt to add and remove branch protection rules on this repo in Github
 ```
 export GITHUB_TEST_REPOSITORY_ID={RepoIDYouDoNotCareAbout}
-go test -tags=integration
+go test --external
 ```
+Note: Using only a single dash in front "-external" will run the tests but they will fail.  Just use two dashes.  :)  

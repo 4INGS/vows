@@ -10,7 +10,6 @@ import (
 )
 
 func TestProgramWithEnvironmentVariable(t *testing.T) {
-	//*integrationTests = true
 	if !*integrationTests {
 		return
 	}

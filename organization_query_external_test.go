@@ -12,14 +12,9 @@ func TestFetchRepositories(t *testing.T) {
 	}
 	repos := GetReposHelper()
 	assert.True(t, len(repos) > 0, "No repositories found in the organization")
-}
-
-func TestFetchBranchProtection(t *testing.T) {
-	if !*externalTests {
-		return
+	if len(repos) > 0 {
+		assert.NotNil(t, repos[0].Name, "No name found")
 	}
-	repos := GetReposHelper()
-	assert.NotNil(t, repos[0].Name, "No name found")
 }
 
 var cachedRepos []Repository

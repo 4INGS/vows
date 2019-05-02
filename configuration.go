@@ -72,11 +72,10 @@ func configInit() {
 	// Ignore unknown flags
 	et := pflag.ParseErrorsWhitelist{UnknownFlags: true}
 	pflag.CommandLine.ParseErrorsWhitelist = et
+	pflag.BoolP("debug", "d", false, "Enable Debug Logging")
 	for _, config := range configs {
 		pflag.StringP(strings.ToLower(config.Name), config.Abbreviation, config.Default, config.HelpText)
-
 	}
-	pflag.BoolP("debug", "d", false, "Enable Debug Logging")
 	pflag.Parse()
 	viper.BindPFlags(pflag.CommandLine)
 }
@@ -84,6 +83,7 @@ func configInit() {
 func getConfigValue(key string) (string, error) {
 	var err error
 	value := viper.GetString(key)
+
 	if len(value) == 0 {
 		err = fmt.Errorf("Unable to find config setting for %s.  This needs to be set on the command line, in the config file, or in an environment variable", key)
 	}

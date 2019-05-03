@@ -11,14 +11,14 @@ type protector interface {
 }
 
 // ApplyBranchProtection does things
-func ApplyBranchProtection(repos []Repository, whitelist []string, protector protector) error {
+func ApplyBranchProtection(repos []Repository, w ignorelist, protector protector) error {
 	if protector == nil {
 		return errors.New("No protector passed in")
 	}
 	// Loop over repos
 	for _, v := range repos {
 		// Skip if in white list
-		if Contains(whitelist, v.ID) {
+		if w.Onignorelist(v.Name) {
 			continue
 		}
 

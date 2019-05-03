@@ -1,3 +1,4 @@
 .vscode
 vows
 config.json
+ignorelist.txt

@@ -11,10 +11,13 @@ func main() {
 	if debug == "true" {
 		printConfiguration()
 	}
+
+	w := Buildignorelist()
+
 	runOrganizationQuery()
 	repos := runOrganizationQuery()
 	var gp GithubProtector
-	err := ApplyBranchProtection(repos, nil, gp)
+	err := ApplyBranchProtection(repos, w, gp)
 	if err != nil {
 		fmt.Printf("Unable to apply all branch protections" + err.Error())
 	}

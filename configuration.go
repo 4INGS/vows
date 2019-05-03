@@ -108,6 +108,8 @@ func isDebug() bool {
 }
 func isPreview() bool {
 	value, err := getConfigValue("preview")
+	// This one is a special case.  If we can't determine if we are in preview mode, we immediately
+	// stop to ensure nothing is written if the user wanted to be in preview mode
 	if err != nil {
 		panic("Unable to determine if in preview mode " + err.Error())
 	}

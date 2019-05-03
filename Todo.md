@@ -1,9 +1,7 @@
 # Todo
-
 * Add in logging with proper log levels
 * Allow rules to be set using configuration (currently hardcoded)
 * Support adding groups to all repos
-* Check all errors are propertly logged or used
 
 ## Completed
 * Finsih Main.test
@@ -12,3 +10,4 @@
 * Support command line parameters for configuration
 * Support preview mode (just list tasks, don't execute)
 * Implement ignore list
+* Check all errors are propertly logged or used

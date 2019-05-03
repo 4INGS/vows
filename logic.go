@@ -11,40 +11,44 @@ type protector interface {
 }
 
 // ApplyBranchProtection does things
-func ApplyBranchProtection(repos []Repository, w Ignorelist, protector protector) error {
-	if protector == nil {
+func ApplyBranchProtection(repos []Repository, w Ignorelist, p protector) error {
+	if p == nil {
 		return errors.New("No protector passed in")
 	}
 	// Loop over repos
-	for _, v := range repos {
-		// Skip if in white list
-		if w.OnIgnorelist(v.Name) {
-			continue
-		}
-
-		var ruleSet = false
-		// Check if branch protection already in place and correct
-		for _, r := range v.BranchProtectionRules.Nodes {
-			if r.Pattern == "master" {
-				if !ValidBranchProtectionRule(r) {
-					if isPreview() {
-						fmt.Printf("Repo %s: Incorrect branch protection found and would be updated.\n", v.Name)
-					} else {
-						protector.UpdateBranchProtection(v.ID, r)
-					}
-				}
-				ruleSet = true
-			}
-		}
-		if !ruleSet {
-			if isPreview() {
-				fmt.Printf("Repo %s: No branch protection found and would be added.\n", v.Name)
-			} else {
-				protector.AddBranchProtection(v.ID)
-			}
-		}
+	for _, r := range repos {
+		checkRepository(r, w, p)
 	}
 	return nil
+}
+
+func checkRepository(v Repository, w Ignorelist, p protector) {
+	// Skip if in white list
+	if w.OnIgnorelist(v.Name) {
+		return
+	}
+
+	var ruleSet = false
+	// Check if branch protection already in place and correct
+	for _, r := range v.BranchProtectionRules.Nodes {
+		if r.Pattern == "master" {
+			if !ValidBranchProtectionRule(r) {
+				if isPreview() {
+					fmt.Printf("Repo %s: Incorrect branch protection found and would be updated.\n", v.Name)
+				} else {
+					p.UpdateBranchProtection(v.ID, r)
+				}
+			}
+			ruleSet = true
+		}
+	}
+	if !ruleSet {
+		if isPreview() {
+			fmt.Printf("Repo %s: No branch protection found and would be added.\n", v.Name)
+		} else {
+			p.AddBranchProtection(v.ID)
+		}
+	}
 }
 
 // ValidBranchProtectionRule checks to see if a branch protection matches the standards

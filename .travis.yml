@@ -3,4 +3,4 @@ go:
   - master
 script:
   - go build
-  - go test --test.v --integration
+  - go test --integration

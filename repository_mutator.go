@@ -17,7 +17,7 @@ func (p GithubProtector) AddBranchProtection(repoID string) (BranchProtectionRul
 		RepositoryID:                 repoID,
 		Pattern:                      "master",
 		DismissesStaleReviews:        githubv4.NewBoolean(true),
-		IsAdminEnforced:              githubv4.NewBoolean(true),
+		IsAdminEnforced:              githubv4.NewBoolean(false),
 		RequiresApprovingReviews:     githubv4.NewBoolean(true),
 		RequiredApprovingReviewCount: githubv4.NewInt(1),
 		RequiresStatusChecks:         githubv4.NewBoolean(true),

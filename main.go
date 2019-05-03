@@ -12,7 +12,7 @@ func main() {
 		printConfiguration()
 	}
 
-	w := Buildignorelist()
+	w := BuildIgnorelist()
 
 	runOrganizationQuery()
 	repos := runOrganizationQuery()

@@ -15,7 +15,7 @@ Super simple, just run:
 ```
 
 ## Ignore List
-You can supply a list of repos that should be ignored.  Create a file named "ignorelist.txt" with a single line per repo to ignore.
+You can supply a list of repos that should be ignored.  Create a file named "Ignorelist.txt" with a single line per repo to ignore.
 ```
 RepoName1
 RepoName2

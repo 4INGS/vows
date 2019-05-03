@@ -12,7 +12,7 @@ func TestBuildWhiltelist(t *testing.T) {
 		return
 	}
 
-	var w ignorelist
-	err := w.LoadFromFile("testdata/test-ignorelist.txt")
+	var w Ignorelist
+	err := w.LoadFromFile("testdata/test-Ignorelist.txt")
 	assert.Nil(t, err)
 }

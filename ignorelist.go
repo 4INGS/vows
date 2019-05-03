@@ -8,18 +8,20 @@ import (
 	"strings"
 )
 
-type ignorelist struct {
+// Ignorelist is a list of repositories that should be ignore while processing
+type Ignorelist struct {
 	list map[string]bool
 }
 
-// Buildignorelist will create the ignorelist based on current configuration
-func Buildignorelist() ignorelist {
-	var w ignorelist
-	w.LoadFromFile("ignorelist.txt")
+// BuildIgnorelist will create the Ignorelist based on current configuration
+func BuildIgnorelist() Ignorelist {
+	var w Ignorelist
+	w.LoadFromFile("Ignorelist.txt")
 	return w
 }
 
-func (w *ignorelist) LoadFromFile(filename string) error {
+// LoadFromFile will import the ignore list from a file
+func (w *Ignorelist) LoadFromFile(filename string) error {
 	dir, err := os.Getwd()
 	fullPath := path.Join(dir, filename)
 	content, err := ioutil.ReadFile(fullPath)
@@ -32,7 +34,8 @@ func (w *ignorelist) LoadFromFile(filename string) error {
 	return nil
 }
 
-func (w *ignorelist) SetLines(lines []string) {
+// SetLines will set the list of repos that should be ignored
+func (w *Ignorelist) SetLines(lines []string) {
 	set := make(map[string]bool)
 	for _, v := range lines {
 		if len(v) > 0 {
@@ -45,7 +48,8 @@ func (w *ignorelist) SetLines(lines []string) {
 	w.list = set
 }
 
-func (w *ignorelist) Onignorelist(reponame string) bool {
+// OnIgnorelist will check to see if the repository name should be ignored
+func (w *Ignorelist) OnIgnorelist(reponame string) bool {
 	_, present := w.list[reponame]
 	return present
 }

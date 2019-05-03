@@ -29,7 +29,7 @@ func TestNoProtector(t *testing.T) {
 			ID: "834",
 		},
 	}
-	var w ignorelist
+	var w Ignorelist
 
 	// Execute
 	err := ApplyBranchProtection(repos, w, nil)
@@ -47,7 +47,7 @@ func TestSingleRepo(t *testing.T) {
 			ID: "456",
 		},
 	}
-	var w ignorelist
+	var w Ignorelist
 
 	// Execute
 	ApplyBranchProtection(repos, w, testObj)
@@ -67,14 +67,14 @@ func TestMultiRepo(t *testing.T) {
 			ID: "567",
 		},
 	}
-	var w ignorelist
+	var w Ignorelist
 	// Execute
 	ApplyBranchProtection(repos, w, testObj)
 	// Verify
 	testObj.AssertNumberOfCalls(t, "AddBranchProtection", 2)
 }
 
-func TestSkipignorelist(t *testing.T) {
+func TestSkipIgnorelist(t *testing.T) {
 	// Setup
 	testObj := new(mockprotector)
 	testObj.On("AddBranchProtection", mock.AnythingOfType("string")).Return()
@@ -84,7 +84,7 @@ func TestSkipignorelist(t *testing.T) {
 			Name: "abc",
 		},
 	}
-	var w ignorelist
+	var w Ignorelist
 	w.SetLines([]string{"abc"})
 	// Execute
 	ApplyBranchProtection(repos, w, testObj)
@@ -97,7 +97,7 @@ func TestCorrectBranchProtections(t *testing.T) {
 	testObj := new(mockprotector)
 	testObj.On("AddBranchProtection", mock.AnythingOfType("string")).Return()
 	repos := mockCorrectRepos()
-	var w ignorelist
+	var w Ignorelist
 	// Execute
 	ApplyBranchProtection(repos, w, testObj)
 	// Verify
@@ -109,7 +109,7 @@ func TestIncorrectRequiresStatusChecks(t *testing.T) {
 	testObj := new(mockprotector)
 	testObj.On("UpdateBranchProtection", "2468").Return()
 	repos := mockCorrectRepos()
-	var w ignorelist
+	var w Ignorelist
 	//Break a rule
 	repos[0].BranchProtectionRules.Nodes[0].RequiresStatusChecks = false
 
@@ -123,7 +123,7 @@ func TestIncorrectIsAdminEnforced(t *testing.T) {
 	testObj := new(mockprotector)
 	testObj.On("UpdateBranchProtection", "2468").Return()
 	repos := mockCorrectRepos()
-	var w ignorelist
+	var w Ignorelist
 	//Break a rule
 	repos[0].BranchProtectionRules.Nodes[0].IsAdminEnforced = false
 
@@ -137,7 +137,7 @@ func TestIncorrectReviewCount(t *testing.T) {
 	testObj := new(mockprotector)
 	testObj.On("UpdateBranchProtection", "2468").Return()
 	repos := mockCorrectRepos()
-	var w ignorelist
+	var w Ignorelist
 	//Break a rule
 	repos[0].BranchProtectionRules.Nodes[0].RequiredApprovingReviewCount = 0
 
@@ -158,7 +158,7 @@ func TestPreviewModeAdd(t *testing.T) {
 			Name: "test-preview-repo",
 		},
 	}
-	var w ignorelist
+	var w Ignorelist
 	// Execute
 	ApplyBranchProtection(repos, w, testObj)
 	// Verify
@@ -173,7 +173,7 @@ func TestPreviewModeUpdate(t *testing.T) {
 	repos := mockCorrectRepos()
 	//Break a rule
 	repos[0].BranchProtectionRules.Nodes[0].RequiresStatusChecks = false
-	var w ignorelist
+	var w Ignorelist
 
 	// Execute
 	ApplyBranchProtection(repos, w, testObj)

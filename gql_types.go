@@ -2,6 +2,31 @@ package main
 
 import "github.com/shurcooL/githubv4"
 
+// TeamQuery gets the team from GitHub
+type TeamQuery struct {
+	Organization struct {
+		Name     string
+		Location string
+		URL      string
+		Teams    struct {
+			Nodes      []Team
+			TotalCount int
+		} `graphql:"teams(first:100,query:$teamname)"`
+	} `graphql:"organization(login: $login)"`
+}
+
+// Team represents a Github Team
+type Team struct {
+	Name         string
+	Repositories struct {
+		Nodes    []Repository
+		PageInfo struct {
+			EndCursor   githubv4.String
+			HasNextPage bool
+		}
+	} `graphql:"repositories(first:100, after:$repoCursor)"`
+}
+
 // OrganizationQuery queries github for things
 type OrganizationQuery struct {
 	Organization struct {
@@ -14,7 +39,7 @@ type OrganizationQuery struct {
 				EndCursor   githubv4.String
 				HasNextPage bool
 			}
-		} `graphql:"repositories(first:10, after:$repoCursor)"`
+		} `graphql:"repositories(first:100, after:$repoCursor)"`
 	} `graphql:"organization(login: $login)"`
 }
 

@@ -14,8 +14,7 @@ func main() {
 
 	w := BuildIgnorelist()
 
-	runOrganizationQuery()
-	repos := runOrganizationQuery()
+	repos := GetReposForOrganization()
 	var gp GithubProtector
 	err := ApplyBranchProtection(repos, w, gp)
 	if err != nil {

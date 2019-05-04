@@ -10,19 +10,29 @@ func TestFetchRepositories(t *testing.T) {
 	if !*externalTests {
 		return
 	}
-	repos := GetReposHelper()
+	repos := GetReposForOrganization()
 	assert.True(t, len(repos) > 0, "No repositories found in the organization")
 	if len(repos) > 0 {
 		assert.NotNil(t, repos[0].Name, "No name found")
 	}
 }
 
-var cachedRepos []Repository
-
-// Helper function to fetch the repos once, but allow multiple tests against results
-func GetReposHelper() []Repository {
-	if cachedRepos == nil {
-		cachedRepos = runOrganizationQuery()
+func TestFetchTeamsNonexistent(t *testing.T) {
+	if !*externalTests {
+		return
 	}
-	return cachedRepos
+	_, err := GetReposForTeam("VJEIMVSKLDJFIOJEFF")
+	assert.NotNil(t, err)
+}
+
+func TestFetchTeams(t *testing.T) {
+	if !*externalTests {
+		return
+	}
+	repos, err := GetReposForTeam("All Teams")
+	assert.Nil(t, err)
+	assert.True(t, len(repos) > 0, "No repositories found for the team")
+	if len(repos) > 0 {
+		assert.NotNil(t, repos[0].Name, "No name found")
+	}
 }

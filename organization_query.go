@@ -49,7 +49,8 @@ func executeTeamQuery(client *githubv4.Client, query *TeamQuery, variables map[s
 		if err != nil {
 			fmt.Println("Unable to run the query", err)
 		}
-		fmt.Printf("query %+v\n", query)
+		// If debug, log this out
+		//fmt.Printf("query %+v\n", query)
 		if query.Organization.Teams.TotalCount != 1 {
 			return nil, fmt.Errorf("No team found with name %s", variables["teamname"])
 		}

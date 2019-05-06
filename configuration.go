@@ -19,6 +19,8 @@ const GithubOrganization = "GITHUB_ORG"
 // GithubTestRepositoryID is only used for integraion tests.  Branch rules will be created and removed on this repo.
 const GithubTestRepositoryID = "GITHUB_TEST_REPOSITORY_ID"
 
+const GithubAllTeam = "GITHUB_TEAM"
+
 type configuration struct {
 	Name         string
 	Abbreviation string
@@ -100,6 +102,10 @@ func fetchOrganization() (string, error) {
 
 func fetchTestRepositoryID() (string, error) {
 	return getConfigValue(GithubTestRepositoryID)
+}
+
+func fetchDefaultGroup() (string, error) {
+	return getConfigValue(GithubAllTeam)
 }
 
 func isDebug() bool {

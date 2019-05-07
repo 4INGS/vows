@@ -45,7 +45,7 @@ export VOWS_GITHUB_ORG={Organization name here}
 ```
 
 ### Config file
-You can also configure the application using a json configuration file.  Create a file named "config.json" with the following details.   
+You can also configure the application using a json configuration file.  A sample configuration file is listed at config.sample.json.  Either rename this to config.json or create a file named "config.json" with the following details.   
 ```
 {
     "GITHUB_ORG":"Your_Org_Here",

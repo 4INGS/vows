@@ -104,7 +104,7 @@ func fetchTestRepositoryID() (string, error) {
 	return getConfigValue(GithubTestRepositoryID)
 }
 
-func fetchDefaultGroup() (string, error) {
+func fetchDefaultTeam() (string, error) {
 	return getConfigValue(GithubAllTeam)
 }
 

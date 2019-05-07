@@ -8,26 +8,33 @@ import (
 type protector interface {
 	AddBranchProtection(repoID string) (BranchProtectionRule, error)
 	UpdateBranchProtection(repoID string, rule BranchProtectionRule) error
+	AddTeamToRepo(teamID int, repoName string) error
+	GetTeamID(teamname string) (int, error)
 }
 
-// ApplyBranchProtection does things
-func ApplyBranchProtection(repos []Repository, w Ignorelist, p protector) error {
+// ProcessRepositories applies branch protections and proper teams to all repos
+func ProcessRepositories(repos []Repository, w Ignorelist, p protector, teamname string) error {
 	if p == nil {
 		return errors.New("No protector passed in")
 	}
+	teamID, err := p.GetTeamID(teamname)
+	if err != nil {
+		return fmt.Errorf("Unable to find a team with the given name, %s: %s", teamname, err.Error())
+	}
+
 	// Loop over repos
 	for _, r := range repos {
-		checkRepository(r, w, p)
+		// Skip if in white list
+		if w.OnIgnorelist(r.Name) {
+			continue
+		}
+		checkRepoForBranchProtections(r, p)
+		p.AddTeamToRepo(teamID, r.Name)
 	}
 	return nil
 }
 
-func checkRepository(v Repository, w Ignorelist, p protector) {
-	// Skip if in white list
-	if w.OnIgnorelist(v.Name) {
-		return
-	}
-
+func checkRepoForBranchProtections(v Repository, p protector) {
 	var ruleSet = false
 	// Check if branch protection already in place and correct
 	for _, r := range v.BranchProtectionRules.Nodes {
@@ -50,6 +57,11 @@ func checkRepository(v Repository, w Ignorelist, p protector) {
 		}
 	}
 }
+
+// func checkRepoForTeam(r Repository, teamID int) error {
+// 	err := AddTeamToRepo(teamID, r.Name)
+// 	return err
+// }
 
 // ValidBranchProtectionRule checks to see if a branch protection matches the standards
 func ValidBranchProtectionRule(rule BranchProtectionRule) bool {

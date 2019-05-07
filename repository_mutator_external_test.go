@@ -66,6 +66,29 @@ func TestUpdateBranchProtectionValidID(t *testing.T) {
 	assert.Nil(t, err4, "Unable to remove the added branch protection.  Please remove manually")
 }
 
+func TestAddTeamToRepo(t *testing.T) {
+	if !*externalTests {
+		return
+	}
+	var gp GithubProtector
+	teamID, err := gp.GetTeamID("All Teams")
+	assert.Nil(t, err)
+	err = gp.AddTeamToRepo(teamID, "fuzzy-octo-parakeet")
+	assert.Nil(t, err)
+}
+
+func TestGetTeamID(t *testing.T) {
+	if !*externalTests {
+		return
+	}
+
+	var gp GithubProtector
+	teamID, err := gp.GetTeamID("All Teams")
+
+	assert.Nil(t, err)
+	assert.True(t, teamID > 0)
+}
+
 // This will attempt to clean up after a test
 // Helper function only for now.
 type DeleteBranchProtectionRule struct {

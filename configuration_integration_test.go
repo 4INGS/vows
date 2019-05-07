@@ -20,7 +20,7 @@ func TestProgramWithEnvironmentVariable(t *testing.T) {
 	vows.Env = append(os.Environ(), "VOWS_GITHUB_ORG=bluewasher", "VOWS_GITHUB_TOKEN=12345678901234567890")
 
 	// Run and verify the output
-	output, err := vows.CombinedOutput()
+	output, _ := vows.CombinedOutput()
 	assert.Nil(t, err)
 	assert.Contains(t, string(output), "bluewasher")
 }
@@ -35,7 +35,7 @@ func TestProgramWithParameter(t *testing.T) {
 	vows := exec.Command(path.Join(dir, binaryName), "--github_org=redslide", "--debug=true", "--preview=true", "--github_token=12345")
 
 	// Run and verify the output
-	output, err := vows.CombinedOutput()
+	output, _ := vows.CombinedOutput()
 	assert.Nil(t, err)
 	assert.Contains(t, string(output), "redslide")
 }

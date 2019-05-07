@@ -13,7 +13,7 @@ import (
 // We fall back to the v3 REST API for this.
 
 // AddTeamToRepo will assign a team to the repo
-func (p GithubProtector) AddTeamToRepo(teamID int, repo string) error {
+func (p GithubProtector) AddTeamToRepo(teamID int64, repo string) error {
 	client := getV3Client()
 	org, err := fetchOrganization()
 	if err != nil {
@@ -25,7 +25,8 @@ func (p GithubProtector) AddTeamToRepo(teamID int, repo string) error {
 		return fmt.Errorf("Unable to add team id %d to %s: %s", teamID, repo, err.Error())
 	}
 	//fmt.Printf("Adding team id %d to repo %s", teamID, repo)
-	resp, err := client.Organizations.AddTeamRepo(context.Background(), teamID, org, repo, nil)
+
+	resp, err := client.Teams.AddTeamRepo(context.Background(), teamID, org, repo, nil)
 	if err != nil {
 		fmt.Printf("Error response is %+v", resp)
 	}
@@ -33,14 +34,14 @@ func (p GithubProtector) AddTeamToRepo(teamID int, repo string) error {
 }
 
 // GetTeamID will convert a team name or slug into the team ID
-func (p GithubProtector) GetTeamID(teamname string) (int, error) {
+func (p GithubProtector) GetTeamID(teamname string) (int64, error) {
 	client := getV3Client()
 	opt := &github.ListOptions{}
 	org, err := fetchOrganization()
 	if err != nil {
 		return 0, fmt.Errorf("No org found, unable to get team ID for %s: %s", teamname, err.Error())
 	}
-	teams, _, err := client.Organizations.ListTeams(context.Background(), org, opt)
+	teams, _, err := client.Teams.ListTeams(context.Background(), org, opt)
 	if err != nil {
 		return 0, fmt.Errorf("Unable to get a list of teams from Github: %s", err.Error())
 	}

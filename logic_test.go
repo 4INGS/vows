@@ -21,11 +21,11 @@ func (m *mockprotector) UpdateBranchProtection(id string, r BranchProtectionRule
 	m.Called(id)
 	return nil
 }
-func (m *mockprotector) AddTeamToRepo(teamID int, repoName string) error {
+func (m *mockprotector) AddTeamToRepo(teamID int64, repoName string) error {
 	m.Called(teamID)
 	return nil
 }
-func (m *mockprotector) GetTeamID(teamname string) (int, error) {
+func (m *mockprotector) GetTeamID(teamname string) (int64, error) {
 	m.Called(teamname)
 	return 1, nil
 }

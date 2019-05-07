@@ -8,8 +8,8 @@ import (
 type protector interface {
 	AddBranchProtection(repoID string) (BranchProtectionRule, error)
 	UpdateBranchProtection(repoID string, rule BranchProtectionRule) error
-	AddTeamToRepo(teamID int, repoName string) error
-	GetTeamID(teamname string) (int, error)
+	AddTeamToRepo(teamID int64, repoName string) error
+	GetTeamID(teamname string) (int64, error)
 }
 
 // ProcessRepositories applies branch protections and proper teams to all repos

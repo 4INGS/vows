@@ -87,7 +87,7 @@ func TestMultiRepo(t *testing.T) {
 	testObj.AssertNumberOfCalls(t, "AddBranchProtection", 2)
 }
 
-func TestSkipIgnorelist(t *testing.T) {
+func TestRepoOnIgnorelist(t *testing.T) {
 	// Setup
 	testObj := new(mockprotector)
 	testObj.On("AddBranchProtection", mock.AnythingOfType("string")).Return()

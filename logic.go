@@ -58,11 +58,6 @@ func checkRepoForBranchProtections(v Repository, p protector) {
 	}
 }
 
-// func checkRepoForTeam(r Repository, teamID int) error {
-// 	err := AddTeamToRepo(teamID, r.Name)
-// 	return err
-// }
-
 // ValidBranchProtectionRule checks to see if a branch protection matches the standards
 func ValidBranchProtectionRule(rule BranchProtectionRule) bool {
 	// TODO, allow this to be set in a configuration file or something

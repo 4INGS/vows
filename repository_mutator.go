@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/shurcooL/githubv4"
 )
@@ -11,6 +12,9 @@ type GithubProtector struct{}
 
 // AddBranchProtection will call the Github mutation to add branch protections
 func (p GithubProtector) AddBranchProtection(repoID string) (BranchProtectionRule, error) {
+	if isDebug() {
+		fmt.Printf("Adding branch protection on %s\n", repoID)
+	}
 
 	// TODO: Allow this to be set in configuration
 	input := githubv4.CreateBranchProtectionRuleInput{
@@ -34,6 +38,9 @@ func (p GithubProtector) AddBranchProtection(repoID string) (BranchProtectionRul
 
 // UpdateBranchProtection will correct the settings on a branch protection
 func (p GithubProtector) UpdateBranchProtection(repoID string, rule BranchProtectionRule) error {
+	if isDebug() {
+		fmt.Printf("Updating branch protection on %s\n", repoID)
+	}
 
 	// TODO: Allow this to be set in configuration
 	input := githubv4.UpdateBranchProtectionRuleInput{

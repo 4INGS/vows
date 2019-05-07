@@ -30,6 +30,7 @@ func ProcessRepositories(repos []Repository, w Ignorelist, p protector, teamname
 		}
 		checkRepoForBranchProtections(r, p)
 		p.AddTeamToRepo(teamID, r.Name)
+		fmt.Printf("Processed repository %s\n", r.Name)
 	}
 	return nil
 }

@@ -24,9 +24,12 @@ func (p GithubProtector) AddTeamToRepo(teamID int64, repo string) error {
 	if err != nil {
 		return fmt.Errorf("Unable to add team id %d to %s: %s", teamID, repo, err.Error())
 	}
-	//fmt.Printf("Adding team id %d to repo %s", teamID, repo)
+	if isDebug() {
+		fmt.Printf("Adding team id %d to repo %s", teamID, repo)
+	}
 
-	resp, err := client.Teams.AddTeamRepo(context.Background(), teamID, org, repo, nil)
+	ops := &github.TeamAddTeamRepoOptions{Permission: "push"}
+	resp, err := client.Teams.AddTeamRepo(context.Background(), teamID, org, repo, ops)
 	if err != nil {
 		fmt.Printf("Error response is %+v", resp)
 	}

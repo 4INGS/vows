@@ -40,7 +40,7 @@ func (w *Ignorelist) SetLines(lines []string) {
 	for _, v := range lines {
 		if len(v) > 0 {
 			if isDebug() {
-				fmt.Printf("Storing item of %s\n", v)
+				fmt.Printf("Will ignore repo %s\n", v)
 			}
 			set[v] = true
 		}

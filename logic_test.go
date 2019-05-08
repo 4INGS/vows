@@ -21,8 +21,8 @@ func (m *mockRepoHost) UpdateBranchProtection(id string, r BranchProtectionRule)
 	m.Called(id)
 	return nil
 }
-func (m *mockRepoHost) AddTeamToRepo(teamID int64, repoName string) error {
-	m.Called(teamID)
+func (m *mockRepoHost) AddTeamToRepo(team teamConfig, repoName string) error {
+	m.Called(team.Name)
 	return nil
 }
 func (m *mockRepoHost) GetTeamID(teamname string) (int64, error) {
@@ -40,18 +40,15 @@ func TestNoRepoHost(t *testing.T) {
 	var w Ignorelist
 
 	// Execute
-	err := ProcessRepositories(repos, w, nil, "tn")
+	err := ProcessRepositories(repos, w, nil)
 	// Verify
 	assert.NotNil(t, err)
 }
 
 func TestSingleRepo(t *testing.T) {
 	// Setup
-	testObj := new(mockRepoHost)
-	//testObj.On("AddBranchProtection", mock.AnythingOfType("string")).Return()
+	testObj := mockHost()
 	testObj.On("AddBranchProtection", "456").Return()
-	testObj.On("GetTeamID", mock.AnythingOfType("string")).Return()
-	testObj.On("AddTeamToRepo", mock.Anything, mock.Anything).Return()
 	repos := []Repository{
 		Repository{
 			ID: "456",
@@ -60,7 +57,7 @@ func TestSingleRepo(t *testing.T) {
 	var w Ignorelist
 
 	// Execute
-	err := ProcessRepositories(repos, w, testObj, "tn")
+	err := ProcessRepositories(repos, w, testObj)
 	// Verify
 	assert.Nil(t, err)
 	testObj.AssertNumberOfCalls(t, "AddBranchProtection", 1)
@@ -68,10 +65,7 @@ func TestSingleRepo(t *testing.T) {
 
 func TestMultiRepo(t *testing.T) {
 	// Setup
-	testObj := new(mockRepoHost)
-	testObj.On("AddBranchProtection", mock.AnythingOfType("string")).Return()
-	testObj.On("GetTeamID", mock.AnythingOfType("string")).Return()
-	testObj.On("AddTeamToRepo", mock.Anything, mock.Anything).Return()
+	testObj := mockHost()
 	repos := []Repository{
 		Repository{
 			ID: "345",
@@ -82,16 +76,14 @@ func TestMultiRepo(t *testing.T) {
 	}
 	var w Ignorelist
 	// Execute
-	ProcessRepositories(repos, w, testObj, "tn")
+	ProcessRepositories(repos, w, testObj)
 	// Verify
 	testObj.AssertNumberOfCalls(t, "AddBranchProtection", 2)
 }
 
 func TestRepoOnIgnorelist(t *testing.T) {
 	// Setup
-	testObj := new(mockRepoHost)
-	testObj.On("AddBranchProtection", mock.AnythingOfType("string")).Return()
-	testObj.On("GetTeamID", mock.AnythingOfType("string")).Return()
+	testObj := mockHost()
 	repos := []Repository{
 		Repository{
 			ID:   "123",
@@ -101,70 +93,62 @@ func TestRepoOnIgnorelist(t *testing.T) {
 	var w Ignorelist
 	w.SetLines([]string{"abc"})
 	// Execute
-	ProcessRepositories(repos, w, testObj, "tn")
+	ProcessRepositories(repos, w, testObj)
 	// Verify
 	testObj.AssertNumberOfCalls(t, "AddBranchProtection", 0)
 }
 
 func TestCorrectBranchProtections(t *testing.T) {
 	// Setup
-	testObj := new(mockRepoHost)
-	testObj.On("AddBranchProtection", mock.AnythingOfType("string")).Return()
-	testObj.On("GetTeamID", mock.AnythingOfType("string")).Return()
-	testObj.On("AddTeamToRepo", mock.Anything, mock.Anything).Return()
-	repos := mockCorrectRepos()
+	testObj := mockHost()
+	repos := mockRepos()
 	var w Ignorelist
 	// Execute
-	ProcessRepositories(repos, w, testObj, "tn")
+	ProcessRepositories(repos, w, testObj)
 	// Verify
 	testObj.AssertNumberOfCalls(t, "AddBranchProtection", 0)
+	testObj.AssertNumberOfCalls(t, "UpdateBranchProtection", 0)
 }
 
 func TestIncorrectRequiresStatusChecks(t *testing.T) {
 	// Setup
-	testObj := new(mockRepoHost)
+	testObj := mockHost()
 	testObj.On("UpdateBranchProtection", "2468").Return()
-	testObj.On("GetTeamID", mock.AnythingOfType("string")).Return()
-	testObj.On("AddTeamToRepo", mock.Anything, mock.Anything).Return()
-	repos := mockCorrectRepos()
+	repos := mockRepos()
 	var w Ignorelist
 	//Break a rule
 	repos[0].BranchProtectionRules.Nodes[0].RequiresStatusChecks = false
 
 	// Execute
-	ProcessRepositories(repos, w, testObj, "tn")
+	ProcessRepositories(repos, w, testObj)
 	// Verify
 	testObj.AssertNumberOfCalls(t, "UpdateBranchProtection", 1)
 }
 func TestIncorrectIsAdminEnforced(t *testing.T) {
 	// Setup
-	testObj := new(mockRepoHost)
+	testObj := mockHost()
 	testObj.On("UpdateBranchProtection", "2468").Return()
-	testObj.On("GetTeamID", mock.AnythingOfType("string")).Return()
-	testObj.On("AddTeamToRepo", mock.Anything, mock.Anything).Return()
-	repos := mockCorrectRepos()
+	repos := mockRepos()
 	var w Ignorelist
 	//Break a rule
-	repos[0].BranchProtectionRules.Nodes[0].IsAdminEnforced = false
+	repos[0].BranchProtectionRules.Nodes[0].IsAdminEnforced = true
 
 	// Execute
-	ProcessRepositories(repos, w, testObj, "tn")
+	ProcessRepositories(repos, w, testObj)
 	// Verify
 	testObj.AssertNumberOfCalls(t, "UpdateBranchProtection", 1)
 }
 func TestIncorrectReviewCount(t *testing.T) {
 	// Setup
-	testObj := new(mockRepoHost)
+	testObj := mockHost()
 	testObj.On("UpdateBranchProtection", "2468").Return()
-	testObj.On("GetTeamID", mock.AnythingOfType("string")).Return()
-	testObj.On("AddTeamToRepo", mock.Anything, mock.Anything).Return()
-	repos := mockCorrectRepos()
+	repos := mockRepos()
 	var w Ignorelist
 	//Break a rule
 	repos[0].BranchProtectionRules.Nodes[0].RequiredApprovingReviewCount = 0
 
 	// Execute
-	ProcessRepositories(repos, w, testObj, "tn")
+	ProcessRepositories(repos, w, testObj)
 	// Verify
 	testObj.AssertNumberOfCalls(t, "UpdateBranchProtection", 1)
 }
@@ -172,10 +156,8 @@ func TestIncorrectReviewCount(t *testing.T) {
 func TestPreviewModeAdd(t *testing.T) {
 	// Setup
 	setConfigValue("preview", "true")
-	testObj := new(mockRepoHost)
+	testObj := mockHost()
 	testObj.On("AddBranchProtection", "456").Return()
-	testObj.On("GetTeamID", mock.AnythingOfType("string")).Return()
-	testObj.On("AddTeamToRepo", mock.Anything, mock.Anything).Return()
 	repos := []Repository{
 		Repository{
 			ID:   "456",
@@ -184,7 +166,7 @@ func TestPreviewModeAdd(t *testing.T) {
 	}
 	var w Ignorelist
 	// Execute
-	ProcessRepositories(repos, w, testObj, "tn")
+	ProcessRepositories(repos, w, testObj)
 	// Verify
 	testObj.AssertNumberOfCalls(t, "AddBranchProtection", 0)
 }
@@ -192,22 +174,29 @@ func TestPreviewModeAdd(t *testing.T) {
 func TestPreviewModeUpdate(t *testing.T) {
 	// Setup
 	setConfigValue("preview", "true")
-	testObj := new(mockRepoHost)
+	testObj := mockHost()
 	testObj.On("UpdateBranchProtection", "2468").Return()
-	testObj.On("GetTeamID", mock.AnythingOfType("string")).Return()
-	testObj.On("AddTeamToRepo", mock.Anything, mock.Anything).Return()
-	repos := mockCorrectRepos()
+	repos := mockRepos()
 	//Break a rule
 	repos[0].BranchProtectionRules.Nodes[0].RequiresStatusChecks = false
 	var w Ignorelist
 
 	// Execute
-	ProcessRepositories(repos, w, testObj, "tn")
+	ProcessRepositories(repos, w, testObj)
 	// Verify
 	testObj.AssertNumberOfCalls(t, "UpdateBranchProtection", 0)
 }
 
-func mockCorrectRepos() []Repository {
+func mockHost() *mockRepoHost {
+	testObj := new(mockRepoHost)
+	testObj.On("AddBranchProtection", mock.AnythingOfType("string")).Return()
+	testObj.On("UpdateBranchProtection", mock.AnythingOfType("string")).Return()
+	testObj.On("GetTeamID", mock.AnythingOfType("string")).Return()
+	testObj.On("AddTeamToRepo", mock.Anything, mock.Anything).Return()
+	return testObj
+}
+
+func mockRepos() []Repository {
 	repos := []Repository{
 		Repository{
 			ID:   "2468",
@@ -222,7 +211,7 @@ func mockCorrectRepos() []Repository {
 						RequiresApprovingReviews:     true,
 						RequiredApprovingReviewCount: 1,
 						DismissesStaleReviews:        true,
-						IsAdminEnforced:              true,
+						IsAdminEnforced:              false,
 						RequiresStrictStatusChecks:   true,
 					},
 				},

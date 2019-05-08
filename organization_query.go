@@ -64,9 +64,9 @@ func executeTeamQuery(client *githubv4.Client, query *TeamQuery, variables map[s
 }
 
 func buildOrgVariables() map[string]interface{} {
-	org, err := fetchOrganization()
-	if err != nil {
-		panic(fmt.Sprintf("Unable to build organization variables: %s", err.Error()))
+	org := fetchOrganization()
+	if len(org) == 0 {
+		panic(fmt.Sprintf("Unable to build organization variables, no organization found in the config"))
 	}
 	return map[string]interface{}{
 		"login": githubv4.String(org),

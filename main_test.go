@@ -5,9 +5,10 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+	"path"
 	"testing"
 
-	"github.com/stretchr/testify/assert"
+	"github.com/spf13/viper"
 )
 
 var (
@@ -18,6 +19,15 @@ var (
 func init() {
 	flag.Parse()
 	configInit()
+
+	if *integrationTests {
+		viper.Reset()
+		dir, _ := os.Getwd()
+		viper.SetConfigFile(path.Join(dir, "testdata/config.test.json"))
+		viper.ReadInConfig()
+	}
+
+	fmt.Printf("Config loaded: %s\n", viper.ConfigFileUsed())
 }
 
 func TestMain(m *testing.M) {
@@ -36,10 +46,4 @@ func buildProgram() {
 	if err != nil {
 		panic(fmt.Sprintf("Unable to build project: %s", err.Error()))
 	}
-}
-
-// TestLookup will test the query to github
-func TestLookup(t *testing.T) {
-	assert.Equal(t, "1", "1", "Expected then actual")
-	//t.Fatal("This test fails")
 }

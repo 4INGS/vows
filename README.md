@@ -14,50 +14,46 @@ Super simple, just run:
 ./vows
 ```
 
-## Ignore List
-You can supply a list of repos that should be ignored.  Create a file named "Ignorelist.txt" with a single line per repo to ignore.
-```
-RepoName1
-RepoName2
-```
-
 ## Configuration
+Most of the configuration is done through a config.json file.  A sample configuration file is listed at config.sample.json, just rename to config.json.
+
+
 | Key | Example Value | Details |
 | --- | ------------- | ------- |
-|github_token|xxxxxxxxxxxxx|Github access token, Your token can be created by following [these instructions](https://help.github.com/en/articles/creating-a-personal-access-token-for-the-command-line)|
-|github_org|MyAwesomeOrg|The Github organization to work against|
-|preview|false|Do not take any action, only print a list of actions that would be taken|
-|debug|true|If the program should print out debugging information|
-|github_test_repository_id|xxxxxxxxxxxxxxxxxxxx|The internal github repository id to use for external tests|
+|AccessToken|```xxxxxxxxxxxxx```|Github access token, Your token can be created by following [these instructions](https://help.github.com/en/articles/creating-a-personal-access-token-for-the-command-line).  Also reference "Token Permissions" below.|
+|Organziation|```"MyAwesomeOrg"```|The Github organization to work against|
+|Teams|```[{"name":"Admins","permissions":"admin"}]```|List of teams that should be added to every repository.  Permissions should be 'push', 'pull', or 'admin'|
+|IgnoreRepositories|```["IgnoreThisRepo","AndThisRepo"]```|List of respositories to ignore|
+|BranchProtectionRules|See "BranchProtection" below||
 
-These can be configured through either
-* Environment Variables
-* Configuration file
-* Command line parameters
+#### Branch Protection
+| Key | Example Value | Details |
+| --- | ------------- | ------- |
+| Pattern | ```"master"``` | The pattern to use for matching the branch protection |
+| DismissesStaleReviews | ```true``` |  |
+| IsAdminEnforced | ```true``` |  |
+| RequiresApprovingReviews | ```true``` |  |
+| RequiredApprovingReviewCount | ```1``` |  |
+| RequiresStatusChecks | ```true``` |  |
+| RequiresStrictStatusChecks | ```true``` |  |
+| RequiredStatusCheckContexts | ```["build", "sonar"]``` |  |
 
-You can specify configuration in any or all of the methods listed.  For example, Github tokens can be sent in through environment variables, while the debug option is listed on the command line.
-
-### Environment Variables
-All keys should be prefixed with "VOWS_" when setting through an environment variable.  Environment variables should be all UPPER CASE.
+#### Environment Variables
+You can also inject configuration through environment variables to supply secrets.  These variables should be prefixed with "VOWS_" when setting through an environment variable.  Environment variables should be all UPPER CASE.
 ```
-export VOWS_GITHUB_TOKEN={Github Token here}
-export VOWS_GITHUB_ORG={Organization name here}
-```
-
-### Config file
-You can also configure the application using a json configuration file.  A sample configuration file is listed at config.sample.json.  Either rename this to config.json or create a file named "config.json" with the following details.   
-```
-{
-    "GITHUB_ORG":"Your_Org_Here",
-    "GITHUB_TOKEN":"Your_Token_Here"
-}
-```
-### Command line configuration
-```
-./vows --github_org=myorg --debug=true --preview=true
+export VOWS_ACCESS_TOKEN={Github Token here}
 ```
 
-### Token Permissions
+#### Command line configuration
+```
+./vows --debug --preview
+```
+| Short Flag | Long Flag | Details |
+| ---------- | --------- | ------- |
+|p|preview|Do not take any action, only print a list of actions that would be taken|
+|d|debug|If the program should print out debugging information|
+
+#### Token Permissions
 This app needs **repo** and **organizations** permissions
 ![token permissions](assets/repo-permissions.png)
 
@@ -79,9 +75,11 @@ go test --integration
 
 ### External tests
 Slower tests that exercise external systems
-Note: These require a configuration value for GITHUB_TEST_REPOSITORY_ID. This will attempt to add and remove branch protection rules on this repo in Github
+Note: These require extra configuration values as shown below.  This will add and remove branch protection rules on this repo in Github, as well as adjust teams.
 ```
-export GITHUB_TEST_REPOSITORY_ID={RepoIDYouDoNotCareAbout}
+export VOWS_GITHUB_TEST_REPOSITORY_ID="xxxxxxxxx"
+export VOWS_GITHUB_TEST_REPOSITORY="xxxxxxxxx"
+export VOWS_GITHUB_TEST_TEAM_NAME="xxxxxxxxx"
 go test --external
 ```
 Note: Using only a single dash in front "-external" will run the tests but they will fail.  Just use two dashes.  :)  

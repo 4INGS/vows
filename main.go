@@ -7,24 +7,15 @@ import (
 
 func main() {
 	configInit()
-	debug, _ := getConfigValue("debug")
-	if debug == "true" {
-		printConfiguration()
-	}
-
-	w := BuildIgnorelist()
-
-	teamname, err := fetchDefaultTeam()
-	if err != nil {
-		fmt.Printf("Unable to find the default team to assign to all repos: %s", err.Error())
-		os.Exit(1)
-	}
 
 	repos := GetReposForOrganization()
+	var list Ignorelist
+	list.SetLines(fetchIgnoreRepositories())
+
 	var gp GithubRepoHost
-	err = ProcessRepositories(repos, w, gp, teamname)
+	err := ProcessRepositories(repos, list, gp)
 	if err != nil {
-		fmt.Printf("Unable to apply all branch protections" + err.Error())
+		fmt.Printf("Error while processing repositories: %s\n", err.Error())
 		os.Exit(1)
 	}
 	os.Exit(0)

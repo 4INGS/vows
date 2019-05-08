@@ -8,43 +8,39 @@ import (
 )
 
 func TestGetConfigValueWithNoConfiguration(t *testing.T) {
-	value, err := getConfigValue("blah")
+	value := getConfigValue("blah")
 	assert.Empty(t, value)
-	assert.NotNil(t, err)
 }
 
-func TestFetchGithubToken(t *testing.T) {
-	holder := viper.Get(GithubToken)
+func TestFetchAccessToken(t *testing.T) {
+	holder := viper.Get("AccessToken")
 
-	viper.Set(GithubToken, "water")
-	token, err := fetchGithubToken()
+	viper.Set("AccessToken", "water")
+	token := fetchAccessToken()
 	assert.NotEmpty(t, token, "Unable to find the github token, have you set the proper environment variable?")
-	assert.Nil(t, err)
 	assert.Equal(t, "water", token)
 
-	viper.Set(GithubToken, holder)
+	viper.Set("AccessToken", holder)
 }
 
 func TestFetchOrganization(t *testing.T) {
-	holder := viper.Get(GithubOrganization)
+	holder := viper.Get("Organization")
 
-	viper.Set(GithubOrganization, "rock")
-	organization, err := fetchOrganization()
+	viper.Set("Organization", "rock")
+	organization := fetchOrganization()
 	assert.NotEmpty(t, organization, "Unable to find the github organization, have you set the proper environment variable?")
-	assert.Nil(t, err)
 	assert.Equal(t, "rock", organization)
 
-	viper.Set(GithubOrganization, holder)
+	viper.Set("Organization", holder)
 }
 
 func TestFetchTestRepoID(t *testing.T) {
-	holder := viper.Get(GithubTestRepositoryID)
+	holder := viper.Get("GITHUB_TEST_REPOSITORY_ID")
 
-	viper.Set(GithubTestRepositoryID, "fire")
-	repoID, err := fetchTestRepositoryID()
+	viper.Set("GITHUB_TEST_REPOSITORY_ID", "fire")
+	repoID := fetchTestRepositoryID()
 	assert.NotEmpty(t, repoID, "Unable to find the github test repo id, have you set the proper environment variable?")
-	assert.Nil(t, err)
 	assert.Equal(t, "fire", repoID)
 
-	viper.Set(GithubTestRepositoryID, holder)
+	viper.Set("GITHUB_TEST_REPOSITORY_ID", holder)
 }

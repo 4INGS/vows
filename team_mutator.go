@@ -13,23 +13,18 @@ import (
 // We fall back to the v3 REST API for this.
 
 // AddTeamToRepo will assign a team to the repo
-func (p GithubRepoHost) AddTeamToRepo(teamID int64, repo string) error {
+func (p GithubRepoHost) AddTeamToRepo(t teamConfig, repo string) error {
 	client := getV3Client()
-	org, err := fetchOrganization()
-	if err != nil {
-		return fmt.Errorf("Unable to add teamd id %d to %s: %s", teamID, repo, err.Error())
-	}
-	// Will not accept Push permissions, ticket open with Github
-	//opt := &github.OrganizationAddTeamRepoOptions{Permission: "Push"}
-	if err != nil {
-		return fmt.Errorf("Unable to add team id %d to %s: %s", teamID, repo, err.Error())
+	org := fetchOrganization()
+	if len(org) == 0 {
+		return fmt.Errorf("Unable to add team %s to %s: No organziation in config", t.Name, repo)
 	}
 	if isDebug() {
-		fmt.Printf("Adding team id %d to repo %s", teamID, repo)
+		fmt.Printf("Adding team id %s to repo %s", t.Name, repo)
 	}
 
-	ops := &github.TeamAddTeamRepoOptions{Permission: "push"}
-	resp, err := client.Teams.AddTeamRepo(context.Background(), teamID, org, repo, ops)
+	ops := &github.TeamAddTeamRepoOptions{Permission: string(t.Permission)}
+	resp, err := client.Teams.AddTeamRepo(context.Background(), t.ID, org, repo, ops)
 	if err != nil {
 		fmt.Printf("Error response is %+v", resp)
 	}
@@ -40,9 +35,9 @@ func (p GithubRepoHost) AddTeamToRepo(teamID int64, repo string) error {
 func (p GithubRepoHost) GetTeamID(teamname string) (int64, error) {
 	client := getV3Client()
 	opt := &github.ListOptions{}
-	org, err := fetchOrganization()
-	if err != nil {
-		return 0, fmt.Errorf("No org found, unable to get team ID for %s: %s", teamname, err.Error())
+	org := fetchOrganization()
+	if len(org) == 0 {
+		return 0, fmt.Errorf("No org found, unable to get team ID for %s", teamname)
 	}
 	teams, _, err := client.Teams.ListTeams(context.Background(), org, opt)
 	if err != nil {
@@ -59,12 +54,13 @@ func (p GithubRepoHost) GetTeamID(teamname string) (int64, error) {
 
 func getV3Client() *github.Client {
 	var tc *http.Client
-	envToken, _ := fetchGithubToken()
-	if len(envToken) > 0 {
-		token := oauth2.Token{AccessToken: envToken}
-		ts := oauth2.StaticTokenSource(&token)
-		tc = oauth2.NewClient(oauth2.NoContext, ts)
+	at := fetchAccessToken()
+	if len(at) == 0 {
+		panic("No access token found, unable to build v3 client")
 	}
+	token := oauth2.Token{AccessToken: at}
+	ts := oauth2.StaticTokenSource(&token)
+	tc = oauth2.NewClient(oauth2.NoContext, ts)
 	client := github.NewClient(tc)
 	return client
 }

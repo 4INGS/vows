@@ -5,42 +5,42 @@ import (
 	"fmt"
 )
 
-/*
-rules
-applicator
-vow
-enforcement
-law
-code repository rule creator
-github
-repohost
-*/
-
+// RepoHost is a host of repositories (example: Gitlab, Github, etc.)
 type RepoHost interface {
 	AddBranchProtection(repoID string) (BranchProtectionRule, error)
 	UpdateBranchProtection(repoID string, rule BranchProtectionRule) error
-	AddTeamToRepo(teamID int64, repoName string) error
+	AddTeamToRepo(team teamConfig, repoName string) error
 	GetTeamID(teamname string) (int64, error)
 }
 
 // ProcessRepositories applies branch protections and proper teams to all repos
-func ProcessRepositories(repos []Repository, w Ignorelist, p RepoHost, teamname string) error {
+func ProcessRepositories(repos []Repository, list Ignorelist, p RepoHost) error {
 	if p == nil {
 		return errors.New("No RepoHost passed in")
 	}
-	teamID, err := p.GetTeamID(teamname)
-	if err != nil {
-		return fmt.Errorf("Unable to find a team with the given name, %s: %s", teamname, err.Error())
+
+	// TODO: Move this into a separate method
+	// Populate ids for teams
+	teams := fetchTeams()
+	for _, t := range teams {
+		teamID, err := p.GetTeamID(t.Name)
+		if err != nil {
+			return fmt.Errorf("Unable to find a team with the given name, %s: %s", t.Name, err.Error())
+		}
+		t.ID = teamID
 	}
 
 	// Loop over repos
 	for _, r := range repos {
 		// Skip if in white list
-		if w.OnIgnorelist(r.Name) {
+		if list.OnIgnorelist(r.Name) {
 			continue
 		}
 		checkRepoForBranchProtections(r, p)
-		p.AddTeamToRepo(teamID, r.Name)
+
+		for _, t := range teams {
+			p.AddTeamToRepo(t, r.Name)
+		}
 		fmt.Printf("Processed repository %s\n", r.Name)
 	}
 	return nil

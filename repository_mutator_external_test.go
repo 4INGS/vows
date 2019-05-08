@@ -23,9 +23,9 @@ func TestAddBranchProtectionValidID(t *testing.T) {
 	if !*externalTests {
 		return
 	}
-	repoID, err := fetchTestRepositoryID()
-	if err != nil {
-		assert.Fail(t, err.Error())
+	repoID := fetchTestRepositoryID()
+	if len(repoID) == 0 {
+		assert.Fail(t, "No test repository provided in the configuration")
 		return
 	}
 
@@ -45,9 +45,9 @@ func TestUpdateBranchProtectionValidID(t *testing.T) {
 	if !*externalTests {
 		return
 	}
-	repoID, err := fetchTestRepositoryID()
-	if err != nil {
-		assert.Fail(t, err.Error())
+	repoID := fetchTestRepositoryID()
+	if len(repoID) == 0 {
+		assert.Fail(t, "No test repository provided in the configuration")
 		return
 	}
 
@@ -71,9 +71,14 @@ func TestAddTeamToRepo(t *testing.T) {
 		return
 	}
 	var gp GithubRepoHost
-	teamID, err := gp.GetTeamID("All Teams")
+	var tc teamConfig
+	tc.Name = fetchTestTeamName()
+	tc.Permission = pull
+	teamID, err := gp.GetTeamID(tc.Name)
 	assert.Nil(t, err)
-	err = gp.AddTeamToRepo(teamID, "fuzzy-octo-parakeet")
+	tc.ID = teamID
+
+	err = gp.AddTeamToRepo(tc, fetchTestRepository())
 	assert.Nil(t, err)
 }
 

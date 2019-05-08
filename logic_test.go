@@ -21,8 +21,8 @@ func (m *mockRepoHost) UpdateBranchProtection(id string, r BranchProtectionRule)
 	m.Called(id)
 	return nil
 }
-func (m *mockRepoHost) AddTeamToRepo(teamID int64, repoName string) error {
-	m.Called(teamID)
+func (m *mockRepoHost) AddTeamToRepo(team teamConfig, repoName string) error {
+	m.Called(team.Name)
 	return nil
 }
 func (m *mockRepoHost) GetTeamID(teamname string) (int64, error) {
@@ -40,7 +40,7 @@ func TestNoRepoHost(t *testing.T) {
 	var w Ignorelist
 
 	// Execute
-	err := ProcessRepositories(repos, w, nil, "tn")
+	err := ProcessRepositories(repos, w, nil)
 	// Verify
 	assert.NotNil(t, err)
 }
@@ -60,7 +60,7 @@ func TestSingleRepo(t *testing.T) {
 	var w Ignorelist
 
 	// Execute
-	err := ProcessRepositories(repos, w, testObj, "tn")
+	err := ProcessRepositories(repos, w, testObj)
 	// Verify
 	assert.Nil(t, err)
 	testObj.AssertNumberOfCalls(t, "AddBranchProtection", 1)
@@ -68,6 +68,7 @@ func TestSingleRepo(t *testing.T) {
 
 func TestMultiRepo(t *testing.T) {
 	// Setup
+	//TODO - Common setup into it's own method
 	testObj := new(mockRepoHost)
 	testObj.On("AddBranchProtection", mock.AnythingOfType("string")).Return()
 	testObj.On("GetTeamID", mock.AnythingOfType("string")).Return()
@@ -82,7 +83,7 @@ func TestMultiRepo(t *testing.T) {
 	}
 	var w Ignorelist
 	// Execute
-	ProcessRepositories(repos, w, testObj, "tn")
+	ProcessRepositories(repos, w, testObj)
 	// Verify
 	testObj.AssertNumberOfCalls(t, "AddBranchProtection", 2)
 }
@@ -101,7 +102,7 @@ func TestRepoOnIgnorelist(t *testing.T) {
 	var w Ignorelist
 	w.SetLines([]string{"abc"})
 	// Execute
-	ProcessRepositories(repos, w, testObj, "tn")
+	ProcessRepositories(repos, w, testObj)
 	// Verify
 	testObj.AssertNumberOfCalls(t, "AddBranchProtection", 0)
 }
@@ -115,7 +116,7 @@ func TestCorrectBranchProtections(t *testing.T) {
 	repos := mockCorrectRepos()
 	var w Ignorelist
 	// Execute
-	ProcessRepositories(repos, w, testObj, "tn")
+	ProcessRepositories(repos, w, testObj)
 	// Verify
 	testObj.AssertNumberOfCalls(t, "AddBranchProtection", 0)
 }
@@ -132,7 +133,7 @@ func TestIncorrectRequiresStatusChecks(t *testing.T) {
 	repos[0].BranchProtectionRules.Nodes[0].RequiresStatusChecks = false
 
 	// Execute
-	ProcessRepositories(repos, w, testObj, "tn")
+	ProcessRepositories(repos, w, testObj)
 	// Verify
 	testObj.AssertNumberOfCalls(t, "UpdateBranchProtection", 1)
 }
@@ -148,7 +149,7 @@ func TestIncorrectIsAdminEnforced(t *testing.T) {
 	repos[0].BranchProtectionRules.Nodes[0].IsAdminEnforced = false
 
 	// Execute
-	ProcessRepositories(repos, w, testObj, "tn")
+	ProcessRepositories(repos, w, testObj)
 	// Verify
 	testObj.AssertNumberOfCalls(t, "UpdateBranchProtection", 1)
 }
@@ -164,7 +165,7 @@ func TestIncorrectReviewCount(t *testing.T) {
 	repos[0].BranchProtectionRules.Nodes[0].RequiredApprovingReviewCount = 0
 
 	// Execute
-	ProcessRepositories(repos, w, testObj, "tn")
+	ProcessRepositories(repos, w, testObj)
 	// Verify
 	testObj.AssertNumberOfCalls(t, "UpdateBranchProtection", 1)
 }
@@ -184,7 +185,7 @@ func TestPreviewModeAdd(t *testing.T) {
 	}
 	var w Ignorelist
 	// Execute
-	ProcessRepositories(repos, w, testObj, "tn")
+	ProcessRepositories(repos, w, testObj)
 	// Verify
 	testObj.AssertNumberOfCalls(t, "AddBranchProtection", 0)
 }
@@ -202,7 +203,7 @@ func TestPreviewModeUpdate(t *testing.T) {
 	var w Ignorelist
 
 	// Execute
-	ProcessRepositories(repos, w, testObj, "tn")
+	ProcessRepositories(repos, w, testObj)
 	// Verify
 	testObj.AssertNumberOfCalls(t, "UpdateBranchProtection", 0)
 }

@@ -1,6 +1,9 @@
 # Todo
+* Drastically expand configuration.  Make single file with all configs.  Move into it: rules, ignore list, teams and permissions
+* Redo command line parameters so testing flags work (-test.timeout) and single dashes work (-integration, -external).  The will involve redoing how int and ext tests are run
+* Break external testing configuration into a separate file.
 * Add in logging with proper log levels
-* Allow rules to be set using configuration (currently hardcoded)
+* Support adding single admin user to all repos
 
 ## Completed
 * Finsih Main.test

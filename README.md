@@ -24,9 +24,9 @@ Most of the configuration is done through a config.json file.  A sample configur
 |Organziation|```"MyAwesomeOrg"```|The Github organization to work against|
 |Teams|```[{"name":"Admins","permissions":"admin"}]```|List of teams that should be added to every repository.  Permissions should be 'push', 'pull', or 'admin'|
 |IgnoreRepositories|```["IgnoreThisRepo","AndThisRepo"]```|List of respositories to ignore|
-|BranchProtectionRules|See "BranchProtection" below||
+|BranchProtectionRules|```{"Key":"Value", "Key2":"Value"}```|See "BranchProtection" below|
 
-#### Branch Protection
+#### Branch Protection Rules
 | Key | Example Value | Details |
 | --- | ------------- | ------- |
 | Pattern | ```"master"``` | The pattern to use for matching the branch protection |

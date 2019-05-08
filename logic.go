@@ -47,13 +47,18 @@ func ProcessRepositories(repos []Repository, list Ignorelist, p RepoHost) error 
 
 func checkRepoForBranchProtections(v Repository, p RepoHost) {
 	var ruleSet = false
+	configRules := fetchBranchProtectionRules()
+
 	// Check if branch protection already in place and correct
 	for _, r := range v.BranchProtectionRules.Nodes {
-		if r.Pattern == "master" {
+		if r.Pattern == configRules.Pattern {
 			if !ValidBranchProtectionRule(r) {
 				if isPreview() {
 					fmt.Printf("Repo %s: Incorrect branch protection found and would be updated.\n", v.Name)
 				} else {
+					if isDebug() {
+						fmt.Printf("Updating branch protection for %s\n", v.Name)
+					}
 					p.UpdateBranchProtection(v.ID, r)
 				}
 			}
@@ -64,6 +69,9 @@ func checkRepoForBranchProtections(v Repository, p RepoHost) {
 		if isPreview() {
 			fmt.Printf("Repo %s: No branch protection found and would be added.\n", v.Name)
 		} else {
+			if isDebug() {
+				fmt.Printf("Adding branch protection to %s\n", v.Name)
+			}
 			p.AddBranchProtection(v.ID)
 		}
 	}

@@ -26,5 +26,8 @@ func (w *Ignorelist) SetLines(lines []string) {
 // OnIgnorelist will check to see if the repository name should be ignored
 func (w *Ignorelist) OnIgnorelist(reponame string) bool {
 	_, present := w.list[reponame]
+	if isDebug() {
+		fmt.Printf("Checking ignore list for repo %s.  Found: %t", reponame, present)
+	}
 	return present
 }

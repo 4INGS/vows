@@ -1,8 +1,6 @@
 # Todo
 * Redo command line parameters so testing flags work (-test.timeout) and single dashes work (-integration, -external).  The will involve redoing how int and ext tests are run
-* Add in logging with proper log levels
 * Get rid of test repo id
-
 
 ## Completed
 * Finsih Main.test
@@ -14,3 +12,4 @@
 * Check all errors are propertly logged or used
 * Support adding teams to all repos
 * Drastically expand configuration.  Make single file with all configs.  Move into it: rules, ignore list, teams and permissions
+* Add in logging with proper log levels

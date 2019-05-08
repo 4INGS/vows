@@ -8,9 +8,13 @@ import (
 func main() {
 	configInit()
 
-	repos := GetReposForOrganization()
 	var list Ignorelist
 	list.SetLines(fetchIgnoreRepositories())
+
+	repos := GetReposForOrganization()
+	if isDebug() {
+		fmt.Printf("Fetched %d repos for organization\n", len(repos))
+	}
 
 	var gp GithubRepoHost
 	err := ProcessRepositories(repos, list, gp)

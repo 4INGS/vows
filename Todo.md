@@ -1,6 +1,7 @@
 # Todo
 * Redo command line parameters so testing flags work (-test.timeout) and single dashes work (-integration, -external).  The will involve redoing how int and ext tests are run
 * Add in logging with proper log levels
+* Get rid of test repo id
 
 
 ## Completed

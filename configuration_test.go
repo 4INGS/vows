@@ -12,7 +12,7 @@ func TestGetConfigValueWithNoConfiguration(t *testing.T) {
 	assert.Empty(t, value)
 }
 
-func TestfetchAccessToken(t *testing.T) {
+func TestFetchAccessToken(t *testing.T) {
 	holder := viper.Get("AccessToken")
 
 	viper.Set("AccessToken", "water")
@@ -43,12 +43,4 @@ func TestFetchTestRepoID(t *testing.T) {
 	assert.Equal(t, "fire", repoID)
 
 	viper.Set("GITHUB_TEST_REPOSITORY_ID", holder)
-}
-
-func TestTeams(t *testing.T) {
-	// TODO: Have proper setup for this instead of depending on config file
-	teams := fetchTeams()
-	assert.Equal(t, 2, len(teams))
-	assert.Equal(t, "all-teams", teams[0].Name)
-	assert.Equal(t, push, teams[0].Permission)
 }

@@ -6,11 +6,11 @@
     "GITHUB_TEST_TEAM_NAME":"xxxxxxxxx-only needed if running external tests",
     "Teams":[
         {
-            "name":"all-teams",
-            "permissions":"push"
+            "name":"team1",
+            "permissions":"pull"
         },
         {
-            "name":"ci",
+            "name":"team2",
             "permissions":"admin"
         }
     ],

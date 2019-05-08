@@ -44,20 +44,35 @@ func TestProgramWithConfigFile(t *testing.T) {
 	if !*integrationTests {
 		return
 	}
-	// Testing results of configInit(), which is part of every test setup
+	// Setup uses data from test configuration, loaded as part of test init
 
 	// Verify
 	token := fetchAccessToken()
 	assert.NotEmpty(t, token, "No github token found in configuration")
+	assert.Equal(t, "1111111111111111111111111111111111111111", token)
 	repoID := fetchTestRepositoryID()
 	assert.NotEmpty(t, repoID, "No github org found in configuration")
 }
 
-// TODO: Need to inject configuration for this
 func TestIgnoreRepos(t *testing.T) {
 	if !*integrationTests {
 		return
 	}
+	// Setup uses data from test configuration, loaded as part of test init
+
 	repos := fetchIgnoreRepositories()
-	assert.True(t, len(repos) > 0)
+	assert.True(t, len(repos) == 2)
+	assert.Equal(t, "Repo1", repos[0])
+}
+
+func TestTeams(t *testing.T) {
+	if !*integrationTests {
+		return
+	}
+	// Setup uses data from test configuration, loaded as part of test init
+
+	teams := fetchTeams()
+	assert.Equal(t, 2, len(teams))
+	assert.Equal(t, "team1", teams[0].Name)
+	assert.Equal(t, pull, teams[0].Permission)
 }

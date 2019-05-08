@@ -97,7 +97,6 @@ func fetchOrganization() string {
 	return viper.GetString("Organization")
 }
 
-// TODO: Get rid of this one, no one likes IDs
 func fetchTestRepositoryID() string {
 	return viper.GetString("GITHUB_TEST_REPOSITORY_ID")
 }
@@ -113,7 +112,11 @@ func fetchTeams() []teamConfig {
 	value := viper.Get("Teams")
 
 	// Viper does not have a good way to get an array of structs out
-	// We
+	if value == nil {
+		fmt.Println("no teams found.")
+		var empty []teamConfig
+		return empty
+	}
 	switch reflect.TypeOf(value).Kind() {
 	case reflect.Slice:
 		s := reflect.ValueOf(value)

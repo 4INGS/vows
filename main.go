@@ -21,7 +21,7 @@ func main() {
 	}
 
 	repos := GetReposForOrganization()
-	var gp GithubProtector
+	var gp GithubRepoHost
 	err = ProcessRepositories(repos, w, gp, teamname)
 	if err != nil {
 		fmt.Printf("Unable to apply all branch protections" + err.Error())

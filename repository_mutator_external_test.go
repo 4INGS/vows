@@ -13,7 +13,7 @@ func TestAddBranchProtectionInvalidID(t *testing.T) {
 	if !*externalTests {
 		return
 	}
-	var gp GithubProtector
+	var gp GithubRepoHost
 	_, err := gp.AddBranchProtection("123")
 	assert.NotNil(t, err)
 }
@@ -30,7 +30,7 @@ func TestAddBranchProtectionValidID(t *testing.T) {
 	}
 
 	// Add protection
-	var gp GithubProtector
+	var gp GithubRepoHost
 	rule, err2 := gp.AddBranchProtection(repoID)
 	assert.Nil(t, err2)
 	assert.NotEmpty(t, rule.ID, "No branch rule ID returned from the mutation")
@@ -52,7 +52,7 @@ func TestUpdateBranchProtectionValidID(t *testing.T) {
 	}
 
 	// Add protection
-	var gp GithubProtector
+	var gp GithubRepoHost
 	rule, err2 := gp.AddBranchProtection(repoID)
 	assert.Nil(t, err2)
 	assert.NotEmpty(t, rule.ID, "No branch rule ID returned from the mutation")
@@ -70,7 +70,7 @@ func TestAddTeamToRepo(t *testing.T) {
 	if !*externalTests {
 		return
 	}
-	var gp GithubProtector
+	var gp GithubRepoHost
 	teamID, err := gp.GetTeamID("All Teams")
 	assert.Nil(t, err)
 	err = gp.AddTeamToRepo(teamID, "fuzzy-octo-parakeet")
@@ -82,7 +82,7 @@ func TestGetTeamID(t *testing.T) {
 		return
 	}
 
-	var gp GithubProtector
+	var gp GithubRepoHost
 	teamID, err := gp.GetTeamID("All Teams")
 
 	assert.Nil(t, err)

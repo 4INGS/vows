@@ -13,7 +13,7 @@ import (
 // We fall back to the v3 REST API for this.
 
 // AddTeamToRepo will assign a team to the repo
-func (p GithubProtector) AddTeamToRepo(teamID int64, repo string) error {
+func (p GithubRepoHost) AddTeamToRepo(teamID int64, repo string) error {
 	client := getV3Client()
 	org, err := fetchOrganization()
 	if err != nil {
@@ -37,7 +37,7 @@ func (p GithubProtector) AddTeamToRepo(teamID int64, repo string) error {
 }
 
 // GetTeamID will convert a team name or slug into the team ID
-func (p GithubProtector) GetTeamID(teamname string) (int64, error) {
+func (p GithubRepoHost) GetTeamID(teamname string) (int64, error) {
 	client := getV3Client()
 	opt := &github.ListOptions{}
 	org, err := fetchOrganization()

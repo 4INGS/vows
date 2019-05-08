@@ -7,11 +7,11 @@ import (
 	"github.com/shurcooL/githubv4"
 )
 
-// GithubProtector applies and updates branch protections
-type GithubProtector struct{}
+// GithubRepoHost applies and updates branch protections
+type GithubRepoHost struct{}
 
 // AddBranchProtection will call the Github mutation to add branch protections
-func (p GithubProtector) AddBranchProtection(repoID string) (BranchProtectionRule, error) {
+func (p GithubRepoHost) AddBranchProtection(repoID string) (BranchProtectionRule, error) {
 	if isDebug() {
 		fmt.Printf("Adding branch protection on %s\n", repoID)
 	}
@@ -37,7 +37,7 @@ func (p GithubProtector) AddBranchProtection(repoID string) (BranchProtectionRul
 }
 
 // UpdateBranchProtection will correct the settings on a branch protection
-func (p GithubProtector) UpdateBranchProtection(repoID string, rule BranchProtectionRule) error {
+func (p GithubRepoHost) UpdateBranchProtection(repoID string, rule BranchProtectionRule) error {
 	if isDebug() {
 		fmt.Printf("Updating branch protection on %s\n", repoID)
 	}

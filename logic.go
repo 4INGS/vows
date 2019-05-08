@@ -5,7 +5,18 @@ import (
 	"fmt"
 )
 
-type protector interface {
+/*
+rules
+applicator
+vow
+enforcement
+law
+code repository rule creator
+github
+repohost
+*/
+
+type RepoHost interface {
 	AddBranchProtection(repoID string) (BranchProtectionRule, error)
 	UpdateBranchProtection(repoID string, rule BranchProtectionRule) error
 	AddTeamToRepo(teamID int64, repoName string) error
@@ -13,9 +24,9 @@ type protector interface {
 }
 
 // ProcessRepositories applies branch protections and proper teams to all repos
-func ProcessRepositories(repos []Repository, w Ignorelist, p protector, teamname string) error {
+func ProcessRepositories(repos []Repository, w Ignorelist, p RepoHost, teamname string) error {
 	if p == nil {
-		return errors.New("No protector passed in")
+		return errors.New("No RepoHost passed in")
 	}
 	teamID, err := p.GetTeamID(teamname)
 	if err != nil {
@@ -35,7 +46,7 @@ func ProcessRepositories(repos []Repository, w Ignorelist, p protector, teamname
 	return nil
 }
 
-func checkRepoForBranchProtections(v Repository, p protector) {
+func checkRepoForBranchProtections(v Repository, p RepoHost) {
 	var ruleSet = false
 	// Check if branch protection already in place and correct
 	for _, r := range v.BranchProtectionRules.Nodes {

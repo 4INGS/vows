@@ -107,6 +107,7 @@ func TestCorrectBranchProtections(t *testing.T) {
 	ProcessRepositories(repos, w, testObj)
 	// Verify
 	testObj.AssertNumberOfCalls(t, "AddBranchProtection", 0)
+	testObj.AssertNumberOfCalls(t, "UpdateBranchProtection", 0)
 }
 
 func TestIncorrectRequiresStatusChecks(t *testing.T) {
@@ -130,7 +131,7 @@ func TestIncorrectIsAdminEnforced(t *testing.T) {
 	repos := mockRepos()
 	var w Ignorelist
 	//Break a rule
-	repos[0].BranchProtectionRules.Nodes[0].IsAdminEnforced = false
+	repos[0].BranchProtectionRules.Nodes[0].IsAdminEnforced = true
 
 	// Execute
 	ProcessRepositories(repos, w, testObj)
@@ -189,6 +190,7 @@ func TestPreviewModeUpdate(t *testing.T) {
 func mockHost() *mockRepoHost {
 	testObj := new(mockRepoHost)
 	testObj.On("AddBranchProtection", mock.AnythingOfType("string")).Return()
+	testObj.On("UpdateBranchProtection", mock.AnythingOfType("string")).Return()
 	testObj.On("GetTeamID", mock.AnythingOfType("string")).Return()
 	testObj.On("AddTeamToRepo", mock.Anything, mock.Anything).Return()
 	return testObj
@@ -209,7 +211,7 @@ func mockRepos() []Repository {
 						RequiresApprovingReviews:     true,
 						RequiredApprovingReviewCount: 1,
 						DismissesStaleReviews:        true,
-						IsAdminEnforced:              true,
+						IsAdminEnforced:              false,
 						RequiresStrictStatusChecks:   true,
 					},
 				},

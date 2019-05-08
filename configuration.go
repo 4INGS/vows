@@ -27,12 +27,13 @@ const (
 
 type branchProtectionRulesConfig struct {
 	Pattern                      string
-	DissmissesStaleReview        bool
+	DismissesStaleReviews        bool
 	IsAdminEnforced              bool
 	RequiresApprovingReviews     bool
 	RequiredApprovingReviewCount int
 	RequiresStatusChecks         bool
 	RequiredStatusCheckContexts  []string
+	RequiresStrictStatusChecks   bool
 }
 
 type configuration struct {
@@ -149,13 +150,14 @@ func fetchTeams() []teamConfig {
 func fetchBranchProtectionRules() branchProtectionRulesConfig {
 	var config branchProtectionRulesConfig
 
-	config.DissmissesStaleReview = viper.GetBool("BranchProtectionRules.DissmissesStaleReview")
+	config.DismissesStaleReviews = viper.GetBool("BranchProtectionRules.DismissesStaleReviews")
 	config.IsAdminEnforced = viper.GetBool("BranchProtectionRules.IsAdminEnforced")
 	config.Pattern = viper.GetString("BranchProtectionRules.Pattern")
 	config.RequiredApprovingReviewCount = viper.GetInt("BranchProtectionRules.RequiredApprovingReviewCount")
 	config.RequiredStatusCheckContexts = viper.GetStringSlice("BranchProtectionRules.RequiredStatusCheckContexts")
 	config.RequiresApprovingReviews = viper.GetBool("BranchProtectionRules.RequiresApprovingReviews")
 	config.RequiresStatusChecks = viper.GetBool("BranchProtectionRules.RequiresStatusChecks")
+	config.RequiresStrictStatusChecks = viper.GetBool("BranchProtectionRules.RequiresStrictStatusChecks")
 	return config
 }
 

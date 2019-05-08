@@ -23,7 +23,8 @@
         "RequiresStatusChecks":true,
         "RequiredStatusCheckContexts":[
             "build"
-        ]
+        ],
+        "RequiresStrictStatusChecks":true
     },
     "IgnoreRepositories":[
         "Repo1",

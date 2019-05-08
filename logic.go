@@ -19,7 +19,6 @@ func ProcessRepositories(repos []Repository, list Ignorelist, p RepoHost) error 
 		return errors.New("No RepoHost passed in")
 	}
 
-	// TODO: Move this into a separate method
 	// Populate ids for teams
 	teams := fetchTeams()
 	for _, t := range teams {
@@ -72,14 +71,20 @@ func checkRepoForBranchProtections(v Repository, p RepoHost) {
 
 // ValidBranchProtectionRule checks to see if a branch protection matches the standards
 func ValidBranchProtectionRule(rule BranchProtectionRule) bool {
-	// TODO, allow this to be set in a configuration file or something
-	return rule.RequiresStatusChecks == true &&
-		rule.RequiresApprovingReviews == true &&
-		rule.RequiredApprovingReviewCount > 0 &&
-		rule.DismissesStaleReviews == true &&
-		rule.IsAdminEnforced == true &&
-		rule.RequiresStrictStatusChecks == true
+	configRules := fetchBranchProtectionRules()
 
+	result := rule.RequiresStatusChecks == configRules.RequiresStatusChecks &&
+		rule.RequiresApprovingReviews == configRules.RequiresApprovingReviews &&
+		rule.RequiredApprovingReviewCount == configRules.RequiredApprovingReviewCount &&
+		rule.DismissesStaleReviews == configRules.DismissesStaleReviews &&
+		rule.IsAdminEnforced == configRules.IsAdminEnforced &&
+		rule.RequiresStrictStatusChecks == configRules.RequiresStrictStatusChecks
+
+	if !result && isDebug() {
+		fmt.Printf("Unmatched rule '%s'.  Differs from branch protection listed in configuration\nRule: %+v\nConfig: %+v\n", rule.Pattern, rule, configRules)
+	}
+
+	return result
 }
 
 // Contains tells whether a contains x.

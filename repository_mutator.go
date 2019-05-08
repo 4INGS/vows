@@ -16,19 +16,22 @@ func (p GithubRepoHost) AddBranchProtection(repoID string) (BranchProtectionRule
 		fmt.Printf("Adding branch protection on %s\n", repoID)
 	}
 
-	// TODO: Allow this to be set in configuration
+	rules := fetchBranchProtectionRules()
 	input := githubv4.CreateBranchProtectionRuleInput{
 		RepositoryID:                 repoID,
-		Pattern:                      "master",
-		DismissesStaleReviews:        githubv4.NewBoolean(true),
-		IsAdminEnforced:              githubv4.NewBoolean(false),
-		RequiresApprovingReviews:     githubv4.NewBoolean(true),
-		RequiredApprovingReviewCount: githubv4.NewInt(1),
-		RequiresStatusChecks:         githubv4.NewBoolean(true),
-		RequiredStatusCheckContexts: &[]githubv4.String{
-			*githubv4.NewString("build"),
-		},
+		Pattern:                      *githubv4.NewString(githubv4.String(rules.Pattern)),
+		DismissesStaleReviews:        githubv4.NewBoolean(githubv4.Boolean(rules.DismissesStaleReviews)),
+		IsAdminEnforced:              githubv4.NewBoolean(githubv4.Boolean(rules.IsAdminEnforced)),
+		RequiresApprovingReviews:     githubv4.NewBoolean(githubv4.Boolean(rules.RequiresApprovingReviews)),
+		RequiredApprovingReviewCount: githubv4.NewInt(githubv4.Int(rules.RequiredApprovingReviewCount)),
+		RequiresStatusChecks:         githubv4.NewBoolean(githubv4.Boolean(rules.RequiresStatusChecks)),
 	}
+
+	checks := make([]githubv4.String, len(rules.RequiredStatusCheckContexts))
+	for i, name := range rules.RequiredStatusCheckContexts {
+		checks[i] = *githubv4.NewString(githubv4.String(name))
+	}
+	input.RequiredStatusCheckContexts = &checks
 
 	var m CreateRuleMutation
 	client := buildClient()
@@ -42,15 +45,15 @@ func (p GithubRepoHost) UpdateBranchProtection(repoID string, rule BranchProtect
 		fmt.Printf("Updating branch protection on %s\n", repoID)
 	}
 
-	// TODO: Allow this to be set in configuration
+	rules := fetchBranchProtectionRules()
 	input := githubv4.UpdateBranchProtectionRuleInput{
 		BranchProtectionRuleID:       rule.ID,
-		Pattern:                      githubv4.NewString("master"),
-		DismissesStaleReviews:        githubv4.NewBoolean(true),
-		IsAdminEnforced:              githubv4.NewBoolean(true),
-		RequiresApprovingReviews:     githubv4.NewBoolean(true),
-		RequiredApprovingReviewCount: githubv4.NewInt(1),
-		RequiresStatusChecks:         githubv4.NewBoolean(true),
+		Pattern:                      githubv4.NewString(githubv4.String(rules.Pattern)),
+		DismissesStaleReviews:        githubv4.NewBoolean(githubv4.Boolean(rules.DismissesStaleReviews)),
+		IsAdminEnforced:              githubv4.NewBoolean(githubv4.Boolean(rules.IsAdminEnforced)),
+		RequiresApprovingReviews:     githubv4.NewBoolean(githubv4.Boolean(rules.RequiresApprovingReviews)),
+		RequiredApprovingReviewCount: githubv4.NewInt(githubv4.Int(rules.RequiredApprovingReviewCount)),
+		RequiresStatusChecks:         githubv4.NewBoolean(githubv4.Boolean(rules.RequiresStatusChecks)),
 		RequiredStatusCheckContexts: &[]githubv4.String{
 			*githubv4.NewString("build"),
 		},

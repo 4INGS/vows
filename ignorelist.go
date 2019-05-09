@@ -27,7 +27,7 @@ func (w *Ignorelist) SetLines(lines []string) {
 func (w *Ignorelist) OnIgnorelist(reponame string) bool {
 	_, present := w.list[reponame]
 	if isDebug() {
-		fmt.Printf("Checking ignore list for repo %s.  Found: %t", reponame, present)
+		fmt.Printf("Checking ignore list for repo %s.  Found: %t\n", reponame, present)
 	}
 	return present
 }

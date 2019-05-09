@@ -9,7 +9,7 @@ import (
 type RepoHost interface {
 	AddBranchProtection(repoID string) (BranchProtectionRule, error)
 	UpdateBranchProtection(repoID string, rule BranchProtectionRule) error
-	AddTeamToRepo(team teamConfig, repoName string) error
+	AddTeamToRepo(team *teamConfig, repoName string) error
 	GetTeamID(teamname string) (int64, error)
 }
 

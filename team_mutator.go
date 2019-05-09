@@ -15,14 +15,17 @@ import (
 // We fall back to the v3 REST API for this.
 
 // AddTeamToRepo will assign a team to the repo
-func (p GithubRepoHost) AddTeamToRepo(t teamConfig, repo string) error {
+func (p GithubRepoHost) AddTeamToRepo(t *teamConfig, repo string) error {
+	if isDebug() {
+		fmt.Printf("Adding team %+v to repo %s\n", t, repo)
+	}
 	client := getV3Client()
 	org := fetchOrganization()
 	if len(org) == 0 {
 		return fmt.Errorf("Unable to add team %s to %s: No organziation in config", t.Name, repo)
 	}
 	if isDebug() {
-		fmt.Printf("Adding team id %s to repo %s", t.Name, repo)
+		fmt.Printf("Adding team id %s to repo %s\n", t.Name, repo)
 	}
 
 	var err error
@@ -49,6 +52,9 @@ func (p GithubRepoHost) GetTeamID(teamname string) (int64, error) {
 	}
 	for _, team := range p.remoteteams {
 		if team.GetName() == teamname || team.GetSlug() == teamname {
+			if isDebug() {
+				fmt.Printf("Found id of %d for team %s\n", team.GetID(), team.GetName())
+			}
 			return team.GetID(), nil
 		}
 	}
@@ -80,13 +86,13 @@ func populateRemoteTeams(p *GithubRepoHost) error {
 	}
 	err = makeGitHubCall(operation)
 	if resp.NextPage != 0 {
-		fmt.Printf("Non-zero next page found: %d", resp.NextPage)
+		fmt.Printf("Non-zero next page found: %d\n", resp.NextPage)
 	}
 	if err != nil {
 		return fmt.Errorf("Unable to get a list of teams from Github: %s", err.Error())
 	}
 	if isDebug() {
-		fmt.Printf("Found teams %+v\n", teams)
+		fmt.Printf("Found %d teams\n", len(teams))
 	}
 	p.remoteteams = teams
 	return nil
@@ -137,7 +143,7 @@ func makeGitHubCall(operation func() error) error {
 		}
 		retries++
 		if retries > 5 {
-			log.Print("Hit retry limit")
+			log.Printf("Unable to complete operation: %s\n", err.Error())
 			break
 		}
 	}

@@ -21,7 +21,7 @@ func (m *mockRepoHost) UpdateBranchProtection(id string, r BranchProtectionRule)
 	m.Called(id)
 	return nil
 }
-func (m *mockRepoHost) AddTeamToRepo(team teamConfig, repoName string) error {
+func (m *mockRepoHost) AddTeamToRepo(team *teamConfig, repoName string) error {
 	m.Called(team.Name)
 	return nil
 }

@@ -108,14 +108,14 @@ func fetchTestTeamName() string {
 	return viper.GetString("GITHUB_TEST_TEAM_NAME")
 }
 
-func fetchTeams() []teamConfig {
-	var cfgs []teamConfig
+func fetchTeams() []*teamConfig {
+	var cfgs []*teamConfig
 	value := viper.Get("Teams")
 
 	// Viper does not have a good way to get an array of structs out
 	if value == nil {
 		fmt.Println("no teams found.")
-		var empty []teamConfig
+		var empty []*teamConfig
 		return empty
 	}
 	switch reflect.TypeOf(value).Kind() {
@@ -139,7 +139,7 @@ func fetchTeams() []teamConfig {
 			default:
 				panic(fmt.Sprintf("Unknown team permission %s.  Should be 'push', 'pull', or 'admin'", perm))
 			}
-			cfgs = append(cfgs, tc)
+			cfgs = append(cfgs, &tc)
 		}
 	default:
 		panic(fmt.Sprintf("Unknown to parse teams configuration.  Should be an array of teams.  Read: %s", value))

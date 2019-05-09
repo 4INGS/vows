@@ -4,11 +4,14 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/google/go-github/github"
 	"github.com/shurcooL/githubv4"
 )
 
 // GithubRepoHost applies and updates branch protections
-type GithubRepoHost struct{}
+type GithubRepoHost struct {
+	remoteteams []*github.Team
+}
 
 // AddBranchProtection will call the Github mutation to add branch protections
 func (p GithubRepoHost) AddBranchProtection(repoID string) (BranchProtectionRule, error) {

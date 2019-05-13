@@ -68,7 +68,7 @@ func TestUpdateBranchProtectionValidID(t *testing.T) {
 
 func TestAddTeamToRepo(t *testing.T) {
 	if !*externalTests {
-		//return
+		return
 	}
 	var gp GithubRepoHost
 	var tc teamConfig

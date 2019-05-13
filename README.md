@@ -4,7 +4,9 @@ Apply a standard set of rules to all Github repositories in an organization.
 Loops over all the repositories in your organization and sets branch protections on the master branch.  These branch protections are currently hard coded, but a future enhancement will allow these to be customized to your needs.
 
 ## Building
+Must be using go 1.12 or above.
 ```
+export GO111MODULE=on
 go build
 ```
 

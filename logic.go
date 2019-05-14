@@ -52,33 +52,39 @@ func checkRepoForBranchProtections(v Repository, p RepoHost) {
 	// Check if branch protection already in place and correct
 	for _, r := range v.BranchProtectionRules.Nodes {
 		if r.Pattern == configRules.Pattern {
-			if !ValidBranchProtectionRule(r) {
-				if isPreview() {
-					fmt.Printf("Repo %s: Incorrect branch protection found and would be updated.\n", v.Name)
-				} else {
-					if isDebug() {
-						fmt.Printf("Updating branch protection for %s\n", v.Name)
-					}
-					p.UpdateBranchProtection(v.ID, r)
-				}
+			if !validBranchProtectionRule(r) {
+				updateBranchProtection(v, r, p)
 			}
 			ruleSet = true
 		}
 	}
 	if !ruleSet {
-		if isPreview() {
-			fmt.Printf("Repo %s: No branch protection found and would be added.\n", v.Name)
-		} else {
-			if isDebug() {
-				fmt.Printf("Adding branch protection to %s\n", v.Name)
-			}
-			p.AddBranchProtection(v.ID)
-		}
+		addBranchProtection(v, p)
 	}
 }
 
-// ValidBranchProtectionRule checks to see if a branch protection matches the standards
-func ValidBranchProtectionRule(rule BranchProtectionRule) bool {
+func updateBranchProtection(v Repository, r BranchProtectionRule, p RepoHost) {
+	if isPreview() {
+		fmt.Printf("Repo %s: Incorrect branch protection found and would be updated.\n", v.Name)
+	} else {
+		if isDebug() {
+			fmt.Printf("Updating branch protection for %s\n", v.Name)
+		}
+		p.UpdateBranchProtection(v.ID, r)
+	}
+}
+func addBranchProtection(v Repository, p RepoHost) {
+	if isPreview() {
+		fmt.Printf("Repo %s: No branch protection found and would be added.\n", v.Name)
+	} else {
+		if isDebug() {
+			fmt.Printf("Adding branch protection to %s\n", v.Name)
+		}
+		p.AddBranchProtection(v.ID)
+	}
+}
+
+func validBranchProtectionRule(rule BranchProtectionRule) bool {
 	configRules := fetchBranchProtectionRules()
 
 	result := rule.RequiresStatusChecks == configRules.RequiresStatusChecks &&

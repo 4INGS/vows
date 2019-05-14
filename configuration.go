@@ -7,7 +7,6 @@ import (
 
 	"github.com/spf13/pflag"
 
-	"github.com/fsnotify/fsnotify"
 	"github.com/spf13/viper"
 )
 
@@ -62,11 +61,8 @@ func configInit() {
 	viper.SetConfigName("config")
 	viper.AddConfigPath(".")
 	err := viper.ReadInConfig() // Find and read the config file
-	if err == nil {
-		viper.WatchConfig()
-		viper.OnConfigChange(func(e fsnotify.Event) {
-			fmt.Println("Config file changed:", e.Name)
-		})
+	if err != nil {
+		panic("Unable to read in configuration file")
 	}
 
 	// Setup command line flags
@@ -115,8 +111,7 @@ func fetchTeams() []*teamConfig {
 	// Viper does not have a good way to get an array of structs out
 	if value == nil {
 		fmt.Println("no teams found.")
-		var empty []*teamConfig
-		return empty
+		return cfgs
 	}
 	switch reflect.TypeOf(value).Kind() {
 	case reflect.Slice:

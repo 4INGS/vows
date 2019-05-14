@@ -7,6 +7,13 @@ import (
 	"github.com/shurcooL/githubv4"
 )
 
+// RepoNameSorter will order repositories by name
+type RepoNameSorter []Repository
+
+func (a RepoNameSorter) Len() int           { return len(a) }
+func (a RepoNameSorter) Swap(i, j int)      { a[i], a[j] = a[j], a[i] }
+func (a RepoNameSorter) Less(i, j int) bool { return a[i].Name < a[j].Name }
+
 // GetReposForOrganization will fetch all repositories and their branch protections for an organization
 func GetReposForOrganization() []Repository {
 	var query OrganizationQuery
@@ -29,7 +36,7 @@ func executeOrganizationQuery(client *githubv4.Client, query *OrganizationQuery,
 		}
 		variables["repoCursor"] = githubv4.NewString(query.Organization.Repositories.PageInfo.EndCursor)
 	}
-	return allRepos
+	return RepoNameSorter(allRepos)
 }
 
 // GetReposForTeam for fetch all repositories a team has access to

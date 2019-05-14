@@ -44,3 +44,24 @@ func TestFetchTestRepoID(t *testing.T) {
 
 	viper.Set("GITHUB_TEST_REPOSITORY_ID", holder)
 }
+
+func TestInvalidTeamArray(t *testing.T) {
+	holder := viper.Get("Teams")
+
+	teams := []string{
+		"this is not a team", "sorry",
+	}
+	viper.Set("Teams", teams)
+	assert.Panics(t, func() { fetchTeams() }, "Code did not panic")
+
+	viper.Set("Teams", holder)
+}
+func TestInvalidTeamString(t *testing.T) {
+	holder := viper.Get("Teams")
+
+	teams := "this is not a team, sorry"
+	viper.Set("Teams", teams)
+	assert.Panics(t, func() { fetchTeams() }, "Code did not panic")
+
+	viper.Set("Teams", holder)
+}

@@ -12,6 +12,10 @@
         {
             "name":"team2",
             "permissions":"admin"
+        },
+        {
+            "name":"team3",
+            "permissions":"push"
         }
     ],
     "BranchProtectionRules":{

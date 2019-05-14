@@ -72,7 +72,9 @@ func TestTeams(t *testing.T) {
 	// Setup uses data from test configuration, loaded as part of test init
 
 	teams := fetchTeams()
-	assert.Equal(t, 2, len(teams))
+	assert.Equal(t, 3, len(teams))
 	assert.Equal(t, "team1", teams[0].Name)
 	assert.Equal(t, pull, teams[0].Permission)
+	assert.Equal(t, admin, teams[1].Permission)
+	assert.Equal(t, push, teams[2].Permission)
 }

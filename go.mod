@@ -11,4 +11,5 @@ require (
 	github.com/stretchr/objx v0.2.0 // indirect
 	github.com/stretchr/testify v1.3.0
 	golang.org/x/oauth2 v0.0.0-20190402181905-9f3314589c9a
+	golang.org/x/tools v0.0.0-20190513222433-de15caf06883 // indirect
 )

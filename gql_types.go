@@ -27,6 +27,31 @@ type Team struct {
 	} `graphql:"repositories(first:100, after:$repoCursor)"`
 }
 
+// TeamAccessQuery checks if a team has permission to a repo
+type TeamAccessQuery struct {
+	Organization struct {
+		Name  string
+		Teams struct {
+			TotalCount int
+			Nodes      []struct {
+				Name         string
+				Repositories struct {
+					TotalCount int
+					Edges      []struct {
+						Permission string
+						Node       struct {
+							Name string
+						}
+					}
+				} `graphql:"repositories(first:10, query: $repository)"`
+			}
+			PageInfo struct {
+				HasNextPage bool
+			}
+		} `graphql:"teams(first:10, query: $team)"`
+	} `graphql:"organization(login: $organization)"`
+}
+
 // OrganizationQuery queries github for things
 type OrganizationQuery struct {
 	Organization struct {

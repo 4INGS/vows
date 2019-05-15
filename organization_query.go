@@ -23,6 +23,38 @@ func GetReposForOrganization() []Repository {
 	return executeOrganizationQuery(client, &query, vars)
 }
 
+// TeamAccessToRepo checks if the given teamname has the given permission to the repo specified
+func (p GithubRepoHost) TeamAccessToRepo(teamname string, repo string) (string, error) {
+	if isDebug() {
+		fmt.Printf("Checking if %s has access to %s", teamname, repo)
+	}
+
+	var query TeamAccessQuery
+	client := buildClient()
+	vars := buildTeamVariables(teamname, repo)
+	err := client.Query(context.Background(), &query, vars)
+	if err != nil {
+		fmt.Println("Unable to run the query", err)
+	}
+
+	// See if the permission node exists and matches our requested permission
+	if query.Organization.Teams.TotalCount != 1 {
+		return "", fmt.Errorf("No teamname found named %s in the organization %s", teamname, fetchOrganization())
+	}
+	teamObj := query.Organization.Teams.Nodes[0]
+	if teamObj.Repositories.TotalCount == 0 {
+		fmt.Println("NO teamname access")
+		// This is fine, the teamname just doesn't have access
+		return "", nil
+	}
+	for _, edge := range query.Organization.Teams.Nodes[0].Repositories.Edges {
+		if edge.Node.Name == repo {
+			return edge.Permission, nil
+		}
+	}
+	return "", nil
+}
+
 func executeOrganizationQuery(client *githubv4.Client, query *OrganizationQuery, variables map[string]interface{}) []Repository {
 	var allRepos []Repository
 	for {
@@ -39,7 +71,7 @@ func executeOrganizationQuery(client *githubv4.Client, query *OrganizationQuery,
 	return RepoNameSorter(allRepos)
 }
 
-// GetReposForTeam for fetch all repositories a team has access to
+// GetReposForTeam for fetch all repositories a teamname has access to
 func GetReposForTeam(teamname string) ([]Repository, error) {
 	var query TeamQuery
 	client := buildClient()
@@ -59,7 +91,7 @@ func executeTeamQuery(client *githubv4.Client, query *TeamQuery, variables map[s
 		// If debug, log this out
 		//fmt.Printf("query %+v\n", query)
 		if query.Organization.Teams.TotalCount != 1 {
-			return nil, fmt.Errorf("No team found with name %s", variables["teamname"])
+			return nil, fmt.Errorf("No teamname found with name %s", variables["teamname"])
 		}
 		allRepos = append(allRepos, query.Organization.Teams.Nodes[0].Repositories.Nodes...)
 		if !query.Organization.Teams.Nodes[0].Repositories.PageInfo.HasNextPage {
@@ -77,5 +109,18 @@ func buildOrgVariables() map[string]interface{} {
 	}
 	return map[string]interface{}{
 		"login": githubv4.String(org),
+	}
+
+}
+
+func buildTeamVariables(teamname string, repo string) map[string]interface{} {
+	org := fetchOrganization()
+	if len(org) == 0 {
+		panic(fmt.Sprintf("Unable to build organization variables, no organization found in the config"))
+	}
+	return map[string]interface{}{
+		"organization": githubv4.String(org),
+		"team":         githubv4.String(teamname),
+		"repository":   githubv4.String(repo),
 	}
 }

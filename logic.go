@@ -11,6 +11,7 @@ type RepoHost interface {
 	UpdateBranchProtection(repoID string, rule BranchProtectionRule) error
 	AddTeamToRepo(team *teamConfig, repoName string) error
 	GetTeamID(teamname string) (int64, error)
+	TeamAccessToRepo(team string, repo string) (string, error)
 }
 
 // ProcessRepositories applies branch protections and proper teams to all repos
@@ -38,11 +39,32 @@ func ProcessRepositories(repos []Repository, list Ignorelist, p RepoHost) error 
 		checkRepoForBranchProtections(r, p)
 
 		for _, t := range teams {
-			p.AddTeamToRepo(t, r.Name)
+			checkRepoForTeamAccess(t, r, p)
 		}
 		fmt.Printf("Processed repository %s\n", r.Name)
 	}
 	return nil
+}
+
+func checkRepoForTeamAccess(t *teamConfig, r Repository, p RepoHost) error {
+	access, err := p.TeamAccessToRepo(t.Name, r.Name)
+	if err != nil {
+		return err
+	}
+	if !accessMatches(access, t.Permission) {
+		if isPreview() {
+			fmt.Printf("Would give team %s access to repo %s\n", t.Name, r.Name)
+		} else {
+			p.AddTeamToRepo(t, r.Name)
+		}
+	}
+	return nil
+}
+
+func accessMatches(access string, permission teamPermission) bool {
+	return (access == "READ" && permission == pull) ||
+		(access == "WRITE" && permission == push) ||
+		(access == "ADMIN" && permission == admin)
 }
 
 func checkRepoForBranchProtections(v Repository, p RepoHost) {

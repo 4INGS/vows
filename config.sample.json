@@ -1,9 +1,6 @@
 {
     "AccessToken":"1111111111111111111111111111111111111111",
     "Organization":"YourOrgName",
-    "GITHUB_TEST_REPOSITORY_ID":"xxxxxxxxx-only needed if running external tests",
-    "GITHUB_TEST_REPOSITORY":"xxxxxxxxx-only needed if running external tests",
-    "GITHUB_TEST_TEAM_NAME":"xxxxxxxxx-only needed if running external tests",
     "Teams":[
         {
             "name":"all-teams",

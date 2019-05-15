@@ -1,6 +1,7 @@
 # Todo
 * Redo command line parameters so testing flags work (-test.timeout) and single dashes work (-integration, -external).  The will involve redoing how int and ext tests are run
 * Get rid of test repo id
+* When no config file present, don't panic, just print a nice error message and exit
 
 ## Completed
 * Finsih Main.test

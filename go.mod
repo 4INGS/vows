@@ -1,7 +1,7 @@
 module github.com/4INGS/vows
 
 require (
-	github.com/fsnotify/fsnotify v1.4.7
+	github.com/fsnotify/fsnotify v1.4.8
 	github.com/google/go-github v17.0.0+incompatible
 	github.com/google/go-querystring v1.0.0 // indirect
 	github.com/shurcooL/githubv4 v0.0.0-20190119021625-d9689b595017
